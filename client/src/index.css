@@ -14,11 +14,11 @@
 
 @layer components {
   .game-container {
-    @apply w-full h-screen flex flex-col items-center justify-center;
+    @apply fixed inset-0 w-full h-full flex items-center justify-center overflow-hidden;
   }
 
   .game-content {
-    @apply w-full max-w-3xl mx-auto p-4;
+    @apply w-full h-full max-w-5xl mx-auto p-4 flex flex-col items-center justify-center;
   }
 
   .difficulty-selector {
@@ -26,6 +26,6 @@
   }
 
   .game-canvas {
-    @apply w-full aspect-video bg-white rounded-lg shadow-lg overflow-hidden;
+    @apply w-full h-[80vh] max-h-[600px] bg-white rounded-lg shadow-lg relative;
   }
 }
