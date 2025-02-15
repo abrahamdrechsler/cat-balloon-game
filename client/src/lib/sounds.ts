@@ -1,12 +1,6 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
-const MEOW_URLS = [
-  'https://storage.googleapis.com/cat-sounds/cat-meow-1.mp3',
-  'https://storage.googleapis.com/cat-sounds/cat-meow-2.mp3',
-  'https://storage.googleapis.com/cat-sounds/cat-meow-3.mp3'
-];
-
 export async function initializeAudio() {
   try {
     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -14,49 +8,50 @@ export async function initializeAudio() {
       await audioContext.resume();
     }
 
-    // Create a fallback oscillator-based meow sound
-    const createFallbackMeow = async () => {
+    // Create different variations of meow sounds
+    const createMeowSound = (baseFreq: number, duration: number) => {
       if (!audioContext) return null;
 
-      const duration = 0.5;
       const sampleRate = audioContext.sampleRate;
       const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
       const data = buffer.getChannelData(0);
 
-      // Generate a simple meow-like sound
       for (let i = 0; i < buffer.length; i++) {
         const t = i / sampleRate;
-        const frequency = 500 - 200 * (t / duration);
-        data[i] = 0.5 * Math.sin(2 * Math.PI * frequency * t) * 
-                 Math.exp(-4 * t / duration);
+
+        // Create frequency modulation for more realistic meow
+        const freqMod = baseFreq + (Math.sin(2 * Math.PI * 3 * t) * 50);
+        const freq = freqMod - (t / duration) * 200; // Frequency sweep down
+
+        // Add harmonics for richer sound
+        const fundamental = Math.sin(2 * Math.PI * freq * t);
+        const harmonic1 = 0.5 * Math.sin(2 * Math.PI * freq * 2 * t);
+        const harmonic2 = 0.25 * Math.sin(2 * Math.PI * freq * 3 * t);
+
+        // Envelope shaping
+        const attack = t < 0.1 ? t / 0.1 : 1;
+        const release = t > duration - 0.2 ? (duration - t) / 0.2 : 1;
+        const envelope = attack * release * Math.exp(-3 * t / duration);
+
+        data[i] = (fundamental + harmonic1 + harmonic2) * envelope * 0.3;
       }
 
       return buffer;
     };
 
-    // Try loading real meow sounds, fall back to synthetic if needed
-    for (const url of MEOW_URLS) {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Failed to fetch ${url}`);
-        const arrayBuffer = await response.arrayBuffer();
-        if (!audioContext) throw new Error('Audio context is null');
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        catSounds.push(audioBuffer);
-      } catch (error) {
-        console.warn('Failed to load meow sound, using fallback:', error);
-        const fallbackSound = await createFallbackMeow();
-        if (fallbackSound) catSounds.push(fallbackSound);
-      }
+    // Create multiple variations of meow sounds
+    const meowVariations = [
+      { freq: 400, duration: 0.5 }, // Short meow
+      { freq: 350, duration: 0.7 }, // Medium meow
+      { freq: 450, duration: 0.4 }  // High-pitched meow
+    ];
+
+    for (const variation of meowVariations) {
+      const sound = createMeowSound(variation.freq, variation.duration);
+      if (sound) catSounds.push(sound);
     }
 
-    // Ensure we have at least one sound
-    if (catSounds.length === 0) {
-      const fallbackSound = await createFallbackMeow();
-      if (fallbackSound) catSounds.push(fallbackSound);
-    }
-
-    console.log(`Audio initialized with ${catSounds.length} sounds`);
+    console.log(`Created ${catSounds.length} synthetic meow variations`);
   } catch (error) {
     console.error('Failed to initialize audio:', error);
   }
@@ -64,7 +59,7 @@ export async function initializeAudio() {
 
 export function playPopSound() {
   if (!audioContext || catSounds.length === 0) {
-    console.warn('Audio not initialized or no sounds loaded');
+    console.warn('Audio not initialized or no sounds created');
     return;
   }
 
@@ -75,7 +70,7 @@ export function playPopSound() {
 
     // Add a gain node for volume control
     const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0.5; // Reduce volume to 50%
+    gainNode.gain.value = 0.4; // Reduce volume to 40%
 
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
