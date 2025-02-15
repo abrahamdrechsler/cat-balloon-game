@@ -3,12 +3,12 @@ let catSounds: AudioBuffer[] = [];
 
 // List of meow sound files to load
 const MEOW_FILES = [
-  '/assets/meow1 (2).m4a',
-  '/assets/meow2.m4a',
-  '/assets/meow3.m4a',
-  '/assets/Recording.m4a',
-  '/assets/Recording (3).m4a'
-];
+  'meow1 (2).m4a',
+  'meow2.m4a',
+  'meow3.m4a',
+  'Recording.m4a',
+  'Recording (3).m4a'
+].map(file => `/src/assets/${file}`);
 
 export async function initializeAudio() {
   try {
@@ -20,14 +20,22 @@ export async function initializeAudio() {
     // Load each meow sound file
     for (const soundFile of MEOW_FILES) {
       try {
+        console.log('Attempting to load sound file:', soundFile);
         const response = await fetch(soundFile);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const arrayBuffer = await response.arrayBuffer();
+        console.log('Successfully fetched file:', soundFile, 'Size:', arrayBuffer.byteLength);
 
         // Decode the audio data
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         catSounds.push(audioBuffer);
+        console.log('Successfully decoded audio file:', soundFile);
       } catch (error) {
-        console.error('Failed to load cat sound:', error);
+        console.error('Failed to load cat sound:', soundFile, error);
       }
     }
 
