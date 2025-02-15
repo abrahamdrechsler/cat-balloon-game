@@ -1,0 +1,40 @@
+Successfully fetched file: /src/assets/meow1 (2).m4a Size: 19242
+Failed to decode audio data: /src/assets/meow1 (2).m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Failed to load cat sound: /src/assets/meow1 (2).m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Attempting to load sound file: /src/assets/meow2.m4a
+Successfully fetched file: /src/assets/meow2.m4a Size: 21382
+Failed to decode audio data: /src/assets/meow2.m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Failed to load cat sound: /src/assets/meow2.m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Attempting to load sound file: /src/assets/meow3.m4a
+Successfully fetched file: /src/assets/meow3.m4a Size: 17440
+Failed to decode audio data: /src/assets/meow3.m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Failed to load cat sound: /src/assets/meow3.m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Attempting to load sound file: /src/assets/Recording.m4a
+Successfully fetched file: /src/assets/Recording.m4a Size: 19392
+Failed to decode audio data: /src/assets/Recording.m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Failed to load cat sound: /src/assets/Recording.m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Attempting to load sound file: /src/assets/Recording (3).m4a
+Successfully fetched file: /src/assets/Recording (3).m4a Size: 16960
+Failed to decode audio data: /src/assets/Recording (3).m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Failed to load cat sound: /src/assets/Recording (3).m4a 
+DOMException {code: 0, name: "EncodingError", message: "Unable to decode audio data", INDEX_SIZE_ERR: 1, DOMSTRING_SIZE_ERR: 2, …}
+
+Loaded 0 real cat sounds
