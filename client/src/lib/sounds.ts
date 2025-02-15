@@ -1,14 +1,13 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
-// Base64 encoded WAV files of real cat meows
-const MEOW_SOUNDS = [
-  // Friendly meow
-  "data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTADAACBhYF7gXqBeoF5gXmBeYF4gXiBeIF3gXeB",
-  // Short meow
-  "data:audio/wav;base64,UklGRlwCAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTgCAACBgYF9gXyBfIF7gXuBeoF6gXmBeYF4gXiB",
-  // Playful meow
-  "data:audio/wav;base64,UklGRmQEAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YUAEAACBhoF8gXuBe4F6gXqBeoF5gXmBeIF4gXeB"
+// List of meow sound files to load
+const MEOW_FILES = [
+  '/assets/meow1 (2).m4a',
+  '/assets/meow2.m4a',
+  '/assets/meow3.m4a',
+  '/assets/Recording.m4a',
+  '/assets/Recording (3).m4a'
 ];
 
 export async function initializeAudio() {
@@ -18,22 +17,17 @@ export async function initializeAudio() {
       await audioContext.resume();
     }
 
-    // Load the base64 encoded audio data
-    for (const soundData of MEOW_SOUNDS) {
+    // Load each meow sound file
+    for (const soundFile of MEOW_FILES) {
       try {
-        // Convert base64 to array buffer
-        const base64 = soundData.split(',')[1];
-        const binaryString = window.atob(base64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
+        const response = await fetch(soundFile);
+        const arrayBuffer = await response.arrayBuffer();
 
         // Decode the audio data
-        const audioBuffer = await audioContext.decodeAudioData(bytes.buffer);
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         catSounds.push(audioBuffer);
       } catch (error) {
-        console.error('Failed to decode audio:', error);
+        console.error('Failed to load cat sound:', error);
       }
     }
 
