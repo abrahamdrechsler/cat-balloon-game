@@ -74,45 +74,47 @@ export default function Game() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 relative overflow-hidden">
-      {/* HUD */}
-      <div className="fixed top-4 left-4 right-4 flex justify-between items-center z-50">
-        <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 font-bold text-lg">
-          Score: {score}
+    <div className="game-container">
+      <div className="game-content">
+        {/* HUD */}
+        <div className="fixed top-4 left-4 right-4 flex justify-between items-center z-50">
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 font-bold text-lg">
+            Score: {score}
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 font-bold text-lg">
+            Time: {timeLeft}s
+          </div>
         </div>
-        <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 font-bold text-lg">
-          Time: {timeLeft}s
-        </div>
-      </div>
 
-      {/* Game Area */}
-      <div className="w-full h-screen">
-        {balloons.map((balloon) => (
-          <Balloon
-            key={balloon.id}
-            id={balloon.id}
-            x={balloon.x}
-            color={balloon.color}
-            onPop={handlePop}
-            speedMultiplier={settings.speedMultiplier}
-          />
-        ))}
-      </div>
-
-      {/* Start/Game Over/Difficulty Select */}
-      {!isPlaying && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
-          {showDifficulty ? (
-            <DifficultySelect onSelect={handleDifficultySelect} />
-          ) : (
-            <GameOver 
-              score={score} 
-              onRestart={handleRestart}
-              difficulty={difficulty}
+        {/* Game Area */}
+        <div className="game-canvas relative">
+          {balloons.map((balloon) => (
+            <Balloon
+              key={balloon.id}
+              id={balloon.id}
+              x={balloon.x}
+              color={balloon.color}
+              onPop={handlePop}
+              speedMultiplier={settings.speedMultiplier}
             />
-          )}
+          ))}
         </div>
-      )}
+
+        {/* Start/Game Over/Difficulty Select */}
+        {!isPlaying && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+            {showDifficulty ? (
+              <DifficultySelect onSelect={handleDifficultySelect} />
+            ) : (
+              <GameOver 
+                score={score} 
+                onRestart={handleRestart}
+                difficulty={difficulty}
+              />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
