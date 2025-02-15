@@ -37,10 +37,10 @@ export default function Balloon({ id, x, color, onPop }: BalloonProps) {
   const poseIndex = id % catPoses.length;
   const pose = catPoses[poseIndex];
 
-  // Every 4th balloon moves 25% faster
+  // Every 4th balloon moves 35% faster
   const isFaster = id % 4 === 0;
   const baseDuration = 8;
-  const duration = isFaster ? baseDuration * 0.75 : baseDuration;
+  const duration = isFaster ? baseDuration * 0.65 : baseDuration;
 
   const handleClick = () => {
     playPopSound();
@@ -55,10 +55,10 @@ export default function Balloon({ id, x, color, onPop }: BalloonProps) {
         x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
         transition: {
           y: { duration, ease: "linear" },
-          x: { 
-            duration: 4, 
+          x: {
+            duration: 4,
             repeat: Infinity,
-            ease: "easeInOut" 
+            ease: "easeInOut"
           }
         }
       }}

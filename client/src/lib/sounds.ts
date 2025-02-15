@@ -3,12 +3,12 @@ let catSounds: AudioBuffer[] = [];
 
 // Base64 encoded WAV files of real cat meows
 const MEOW_SOUNDS = [
-  // Standard meow
-  "data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YRAAAAAP8gwCP8KPwM/AAADPwQ==",
-  // Playful meow
-  "data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YRAAAAAP7gwCP7KPwM/AAADPwQ==",
+  // Friendly meow
+  "data:audio/wav;base64,UklGRlQDAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTADAACBhYF7gXqBeoF5gXmBeYF4gXiBeIF3gXeB",
   // Short meow
-  "data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YRAAAAAP5gwCP6KPwM/AAADPwQ=="
+  "data:audio/wav;base64,UklGRlwCAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YTgCAACBgYF9gXyBfIF7gXuBeoF6gXmBeYF4gXiB",
+  // Playful meow
+  "data:audio/wav;base64,UklGRmQEAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YUAEAACBhoF8gXuBe4F6gXqBeoF5gXmBeIF4gXeB"
 ];
 
 export async function initializeAudio() {
