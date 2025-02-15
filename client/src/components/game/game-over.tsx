@@ -2,18 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import HighScores, { saveHighScore } from "./high-scores";
 import { useEffect, useState } from "react";
+import { DIFFICULTY_LEVELS } from "@/lib/constants";
 
-const DIFFICULTY_LEVELS = {
-  easy: { name: "Easy" },
-  normal: { name: "Normal" },
-  hard: { name: "Hard" },
-  intense: { name: "Intense" },
-};
+type DifficultyLevel = keyof typeof DIFFICULTY_LEVELS;
 
 interface GameOverProps {
   score: number;
   onRestart: () => void;
-  difficulty: string;
+  difficulty: DifficultyLevel;
 }
 
 export default function GameOver({ score, onRestart, difficulty }: GameOverProps) {
