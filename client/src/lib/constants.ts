@@ -30,6 +30,13 @@ export const DIFFICULTY_LEVELS: Record<string, DifficultySettings> = {
     scoreMultiplier: 3,
     duration: 30,
   },
+  intense: {
+    name: "Intense",
+    spawnInterval: 400, // Half of hard mode's spawn interval
+    speedMultiplier: 1.75, // 25% faster than hard mode
+    scoreMultiplier: 4, // Higher score multiplier for the challenge
+    duration: 30,
+  },
 };
 
 export const DEFAULT_DIFFICULTY = "normal";

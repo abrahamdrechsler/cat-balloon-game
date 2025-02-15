@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 
 const DIFFICULTY_LEVELS = {
   easy: { name: "Easy" },
-  medium: { name: "Medium" },
+  normal: { name: "Normal" },
   hard: { name: "Hard" },
+  intense: { name: "Intense" },
 };
 
 interface GameOverProps {
