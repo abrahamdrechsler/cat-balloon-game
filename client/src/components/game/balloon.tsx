@@ -6,6 +6,7 @@ interface BalloonProps {
   x: number;
   color: string;
   onPop: (id: number) => void;
+  speedMultiplier?: number;
 }
 
 // Array of SVG paths for different cat poses inspired by the reference image
@@ -32,7 +33,7 @@ const catPoses = [
   }
 ];
 
-export default function Balloon({ id, x, color, onPop }: BalloonProps) {
+export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: BalloonProps) {
   // Use the balloon's id to select a consistent pose
   const poseIndex = id % catPoses.length;
   const pose = catPoses[poseIndex];
@@ -40,7 +41,7 @@ export default function Balloon({ id, x, color, onPop }: BalloonProps) {
   // Every 4th balloon moves 35% faster
   const isFaster = id % 4 === 0;
   const baseDuration = 8;
-  const duration = isFaster ? baseDuration * 0.65 : baseDuration;
+  const duration = (isFaster ? baseDuration * 0.65 : baseDuration) / speedMultiplier;
 
   const handleClick = () => {
     playPopSound();

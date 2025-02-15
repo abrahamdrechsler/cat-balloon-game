@@ -2,15 +2,20 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Balloon from "@/components/game/balloon";
 import GameOver from "@/components/game/game-over";
-import { GAME_DURATION } from "@/lib/constants";
+import DifficultySelect from "@/components/game/difficulty-select";
+import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY, type DifficultySettings } from "@/lib/constants";
 import { initializeAudio } from "@/lib/sounds";
 
 export default function Game() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showDifficulty, setShowDifficulty] = useState(true);
+  const [difficulty, setDifficulty] = useState<string>(DEFAULT_DIFFICULTY);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS[DEFAULT_DIFFICULTY].duration);
   const [balloons, setBalloons] = useState<Array<{ id: number; x: number; color: string }>>([]);
   const [nextBalloonId, setNextBalloonId] = useState(1);
+
+  const settings = DIFFICULTY_LEVELS[difficulty];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -38,23 +43,34 @@ export default function Game() {
 
         setBalloons((prev) => [...prev, { id: nextBalloonId, x, color }]);
         setNextBalloonId((prev) => prev + 1);
-      }, 1000);
+      }, settings.spawnInterval);
     }
     return () => clearInterval(spawnTimer);
-  }, [isPlaying, nextBalloonId]);
+  }, [isPlaying, nextBalloonId, settings.spawnInterval]);
 
   const startGame = async () => {
     await initializeAudio();
     setIsPlaying(true);
     setScore(0);
-    setTimeLeft(GAME_DURATION);
+    setTimeLeft(settings.duration);
     setBalloons([]);
     setNextBalloonId(1);
+    setShowDifficulty(false);
   };
 
   const handlePop = (id: number) => {
     setBalloons((prev) => prev.filter((balloon) => balloon.id !== id));
-    setScore((prev) => prev + 1);
+    setScore((prev) => prev + settings.scoreMultiplier);
+  };
+
+  const handleRestart = () => {
+    setShowDifficulty(true);
+    setIsPlaying(false);
+  };
+
+  const handleDifficultySelect = (selectedDifficulty: string) => {
+    setDifficulty(selectedDifficulty);
+    startGame();
   };
 
   return (
@@ -78,23 +94,22 @@ export default function Game() {
             x={balloon.x}
             color={balloon.color}
             onPop={handlePop}
+            speedMultiplier={settings.speedMultiplier}
           />
         ))}
       </div>
 
-      {/* Start/Game Over */}
+      {/* Start/Game Over/Difficulty Select */}
       {!isPlaying && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
-          {timeLeft === GAME_DURATION ? (
-            <Button
-              size="lg"
-              className="text-2xl px-8 py-6 bg-primary hover:bg-primary/90"
-              onClick={startGame}
-            >
-              Start Game
-            </Button>
+          {showDifficulty ? (
+            <DifficultySelect onSelect={handleDifficultySelect} />
           ) : (
-            <GameOver score={score} onRestart={startGame} />
+            <GameOver 
+              score={score} 
+              onRestart={handleRestart}
+              difficulty={difficulty}
+            />
           )}
         </div>
       )}

@@ -3,18 +3,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import HighScores, { saveHighScore } from "./high-scores";
 import { useEffect, useState } from "react";
 
+const DIFFICULTY_LEVELS = {
+  easy: { name: "Easy" },
+  medium: { name: "Medium" },
+  hard: { name: "Hard" },
+};
+
 interface GameOverProps {
   score: number;
   onRestart: () => void;
+  difficulty: string;
 }
 
-export default function GameOver({ score, onRestart }: GameOverProps) {
+export default function GameOver({ score, onRestart, difficulty }: GameOverProps) {
   const [isHighScore, setIsHighScore] = useState(false);
 
   useEffect(() => {
-    const newHighScore = saveHighScore(score);
+    const newHighScore = saveHighScore(score, difficulty);
     setIsHighScore(newHighScore);
-  }, [score]);
+  }, [score, difficulty]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-[90%] max-w-md">
@@ -24,7 +31,12 @@ export default function GameOver({ score, onRestart }: GameOverProps) {
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-6">
           <div className="text-xl text-center">
-            You popped <span className="font-bold text-primary">{score}</span> cat balloons!
+            <div>
+              You popped <span className="font-bold text-primary">{score}</span> cat balloons!
+            </div>
+            <div className="text-sm text-muted-foreground mt-1">
+              Difficulty: {DIFFICULTY_LEVELS[difficulty].name}
+            </div>
             {isHighScore && (
               <div className="text-lg mt-2 text-primary animate-bounce">
                 🎉 New High Score! 🎉
@@ -41,7 +53,7 @@ export default function GameOver({ score, onRestart }: GameOverProps) {
         </CardContent>
       </Card>
 
-      <HighScores currentScore={score} />
+      <HighScores currentScore={score} difficulty={difficulty} />
     </div>
   );
 }
