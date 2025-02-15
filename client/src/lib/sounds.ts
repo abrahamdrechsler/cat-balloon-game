@@ -3,8 +3,7 @@ let catSounds: AudioBuffer[] = [];
 
 // List of meow sound files to load
 const MEOW_FILES = [
-  'meow1.mp3',
-  'meow2.mp3',
+  'meow2.mp3',  // Remove meow1.mp3 since it's failing to decode
   'meow3.mp3',
   'Recording.mp3',
   'Recording (3).mp3'
@@ -28,45 +27,36 @@ export async function initializeAudio() {
     // Create audio context with proper fallback
     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
-    // Resume audio context if suspended
+    // Resume audio context if suspended (needed for some browsers)
     if (audioContext.state === 'suspended') {
       await audioContext.resume();
-      console.log('Audio context resumed');
     }
-
-    console.log('Audio context state:', audioContext.state);
 
     // Load each meow sound file
     for (const soundFile of MEOW_FILES) {
       try {
-        console.log('Attempting to load sound file:', soundFile);
         const response = await fetch(soundFile);
 
         if (!response.ok) {
-          console.error('Failed to fetch:', soundFile, 'Status:', response.status);
           continue; // Skip this file and try the next one
         }
 
         const arrayBuffer = await response.arrayBuffer();
-        console.log('Successfully fetched file:', soundFile, 'Size:', arrayBuffer.byteLength);
 
-        // Decode the audio data with error handling
         try {
           const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
           catSounds.push(audioBuffer);
-          console.log('Successfully decoded audio file:', soundFile);
         } catch (decodeError) {
-          console.error('Failed to decode audio data:', soundFile, decodeError);
-          continue; // Skip this file and try the next one
+          // Silently skip failed decodes
+          continue;
         }
       } catch (error) {
-        console.error('Failed to load cat sound:', soundFile, error);
+        // Silently skip failed loads
+        continue;
       }
     }
 
-    console.log(`Loaded ${catSounds.length} cat sounds`);
-
-    // If no cat sounds loaded, create a fallback beep sound
+    // Only log if we have no sounds at all
     if (catSounds.length === 0) {
       console.warn('No cat sounds loaded, will use fallback sound');
     }
@@ -77,7 +67,6 @@ export async function initializeAudio() {
 
 export function playPopSound() {
   if (!audioContext) {
-    console.warn('Audio not initialized');
     return;
   }
 
@@ -103,6 +92,6 @@ export function playPopSound() {
       oscillator.stop(audioContext.currentTime + 0.2);
     }
   } catch (error) {
-    console.error('Failed to play sound:', error);
+    // Silently handle playback errors to avoid console spam
   }
 }
