@@ -19,38 +19,70 @@ export function playPopSound() {
   }
 
   try {
-    // Create oscillator for the meow sound
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    // Random frequency between 400-600 Hz for cat-like sound
-    const baseFreq = 400 + Math.random() * 200;
-
-    // Connect nodes
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // Set initial parameters
-    oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-
-    // Schedule the meow envelope
     const now = audioContext.currentTime;
 
-    // Quick attack
-    gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
+    // Create main oscillator for the meow
+    const mainOsc = audioContext.createOscillator();
+    const mainGain = audioContext.createGain();
 
-    // Frequency sweep down
-    oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, now + 0.2);
+    // Create modulator oscillator for the "mrr" sound
+    const modOsc = audioContext.createOscillator();
+    const modGain = audioContext.createGain();
+
+    // Create noise for texture
+    const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.5, audioContext.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseBuffer.length; i++) {
+      noiseData[i] = Math.random() * 2 - 1;
+    }
+    const noiseSource = audioContext.createBufferSource();
+    noiseSource.buffer = noiseBuffer;
+    const noiseGain = audioContext.createGain();
+
+    // Random base frequency between 350-450 Hz
+    const baseFreq = 350 + Math.random() * 100;
+
+    // Connect nodes
+    mainOsc.connect(mainGain);
+    modOsc.connect(modGain);
+    noiseSource.connect(noiseGain);
+    mainGain.connect(audioContext.destination);
+    modGain.connect(mainOsc.frequency);
+    noiseGain.connect(audioContext.destination);
+
+    // Set initial parameters
+    mainOsc.frequency.setValueAtTime(baseFreq, now);
+    modOsc.frequency.setValueAtTime(30, now); // Slow modulation for "mrr" sound
+    modGain.gain.setValueAtTime(100, now);
+    mainGain.gain.setValueAtTime(0, now);
+    noiseGain.gain.setValueAtTime(0, now);
+
+    // Schedule the meow envelope
+    // Initial "mrr" attack
+    mainGain.gain.linearRampToValueAtTime(0.3, now + 0.1);
+    modGain.gain.linearRampToValueAtTime(200, now + 0.1);
+    noiseGain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+
+    // Transition to "eow"
+    mainOsc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.2);
+    modGain.gain.linearRampToValueAtTime(0, now + 0.2);
+    mainGain.gain.linearRampToValueAtTime(0.4, now + 0.2);
 
     // Release
-    gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+    mainOsc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + 0.4);
+    mainGain.gain.linearRampToValueAtTime(0, now + 0.4);
+    noiseGain.gain.linearRampToValueAtTime(0, now + 0.4);
 
     // Start and stop
-    oscillator.start(now);
-    oscillator.stop(now + 0.3);
+    mainOsc.start(now);
+    modOsc.start(now);
+    noiseSource.start(now);
 
-    console.log('Playing synthesized meow sound');
+    mainOsc.stop(now + 0.5);
+    modOsc.stop(now + 0.5);
+    noiseSource.stop(now + 0.5);
+
+    console.log('Playing enhanced meow sound');
   } catch (error) {
     console.error('Failed to play sound:', error);
   }
