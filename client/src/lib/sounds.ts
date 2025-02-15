@@ -12,10 +12,16 @@ const MEOW_FILES = [
 
 export async function initializeAudio() {
   try {
+    // Create audio context with proper fallback
     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+    // Resume audio context if suspended
     if (audioContext.state === 'suspended') {
       await audioContext.resume();
+      console.log('Audio context resumed');
     }
+
+    console.log('Audio context state:', audioContext.state);
 
     // Load each meow sound file
     for (const soundFile of MEOW_FILES) {
@@ -24,16 +30,22 @@ export async function initializeAudio() {
         const response = await fetch(soundFile);
 
         if (!response.ok) {
+          console.error('Failed to fetch:', soundFile, 'Status:', response.status);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const arrayBuffer = await response.arrayBuffer();
         console.log('Successfully fetched file:', soundFile, 'Size:', arrayBuffer.byteLength);
 
-        // Decode the audio data
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        catSounds.push(audioBuffer);
-        console.log('Successfully decoded audio file:', soundFile);
+        // Decode the audio data with error handling
+        try {
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+          catSounds.push(audioBuffer);
+          console.log('Successfully decoded audio file:', soundFile);
+        } catch (decodeError) {
+          console.error('Failed to decode audio data:', soundFile, decodeError);
+          throw decodeError;
+        }
       } catch (error) {
         console.error('Failed to load cat sound:', soundFile, error);
       }
