@@ -13,14 +13,10 @@ export default function Game() {
   const [nextBalloonId, setNextBalloonId] = useState(1);
 
   useEffect(() => {
-    initializeAudio();
-  }, []);
-
-  useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isPlaying && timeLeft > 0) {
       timer = setInterval(() => {
-        setTimeLeft((prev) => Math.max(0, prev - 1));
+        setTimeLeft((prevTime) => Math.max(0, prevTime - 1));
       }, 1000);
     }
     return () => clearInterval(timer);
@@ -39,7 +35,7 @@ export default function Game() {
         const x = Math.random() * (window.innerWidth - 100);
         const colors = ["#FF69B4", "#87CEEB", "#98FB98", "#DDA0DD", "#F0E68C"];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        
+
         setBalloons((prev) => [...prev, { id: nextBalloonId, x, color }]);
         setNextBalloonId((prev) => prev + 1);
       }, 1000);
@@ -47,7 +43,8 @@ export default function Game() {
     return () => clearInterval(spawnTimer);
   }, [isPlaying, nextBalloonId]);
 
-  const startGame = () => {
+  const startGame = async () => {
+    await initializeAudio();
     setIsPlaying(true);
     setScore(0);
     setTimeLeft(GAME_DURATION);

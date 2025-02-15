@@ -1,4 +1,4 @@
-const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+let audioContext: AudioContext | null = null;
 const sounds: { [key: string]: AudioBuffer } = {};
 
 const meows = [
@@ -9,23 +9,49 @@ const meows = [
 
 export async function initializeAudio() {
   try {
-    for (let i = 0; i < meows.length; i++) {
-      const response = await fetch(meows[i]);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      sounds[`meow${i}`] = audioBuffer;
+    // Create AudioContext on first user interaction
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+    // Resume the audio context (required by browsers)
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
     }
+
+    console.log('Loading audio files...');
+    for (let i = 0; i < meows.length; i++) {
+      try {
+        const response = await fetch(meows[i]);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        sounds[`meow${i}`] = audioBuffer;
+        console.log(`Loaded meow sound ${i + 1}`);
+      } catch (error) {
+        console.error(`Failed to load meow sound ${i + 1}:`, error);
+      }
+    }
+    console.log('Audio initialization complete');
   } catch (error) {
-    console.error('Failed to load audio:', error);
+    console.error('Failed to initialize audio:', error);
   }
 }
 
 export function playPopSound() {
-  if (Object.keys(sounds).length === 0) return;
+  if (!audioContext || Object.keys(sounds).length === 0) {
+    console.warn('Audio not initialized or no sounds loaded');
+    return;
+  }
 
-  const source = audioContext.createBufferSource();
-  const randomMeow = `meow${Math.floor(Math.random() * meows.length)}`;
-  source.buffer = sounds[randomMeow];
-  source.connect(audioContext.destination);
-  source.start(0);
+  try {
+    const source = audioContext.createBufferSource();
+    const randomMeow = `meow${Math.floor(Math.random() * meows.length)}`;
+    source.buffer = sounds[randomMeow];
+    source.connect(audioContext.destination);
+    source.start(0);
+    console.log('Playing sound:', randomMeow);
+  } catch (error) {
+    console.error('Failed to play sound:', error);
+  }
 }
