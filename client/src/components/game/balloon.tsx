@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { playPopSound } from "@/lib/sounds";
+import { useState } from "react";
 
 interface BalloonProps {
   id: number;
@@ -34,6 +35,8 @@ const catPoses = [
 ];
 
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: BalloonProps) {
+  const [isPopping, setIsPopping] = useState(false);
+
   // Use the balloon's id to select a consistent pose
   const poseIndex = id % catPoses.length;
   const pose = catPoses[poseIndex];
@@ -44,59 +47,68 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
   const duration = (isFaster ? baseDuration * 0.65 : baseDuration) / speedMultiplier;
 
   const handleClick = () => {
+    if (isPopping) return; // Prevent double-clicks during pop animation
+    setIsPopping(true);
     playPopSound();
-    onPop(id);
+    // Delay the actual removal slightly to allow for pop animation
+    setTimeout(() => onPop(id), 150);
   };
 
   return (
-    <motion.div
-      initial={{ y: window.innerHeight + 100, x }}
-      animate={{
-        y: -200,
-        x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
-        transition: {
-          y: { duration, ease: "linear" },
-          x: {
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
+    <AnimatePresence>
+      <motion.div
+        initial={{ y: window.innerHeight + 100, x, scale: 1, opacity: 1 }}
+        animate={{
+          y: -200,
+          x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
+          scale: isPopping ? [1, 1.2, 0] : 1,
+          opacity: isPopping ? [1, 1, 0] : 1,
+          transition: {
+            y: { duration, ease: "linear" },
+            x: {
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            },
+            scale: isPopping ? { duration: 0.15, times: [0, 0.5, 1] } : undefined,
+            opacity: isPopping ? { duration: 0.15, times: [0, 0.5, 1] } : undefined
           }
-        }
-      }}
-      className="absolute cursor-pointer"
-      onClick={handleClick}
-    >
-      <svg
-        width="120"
-        height="160"
-        viewBox="0 0 120 160"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+        }}
+        className="absolute cursor-pointer"
+        onClick={handleClick}
       >
-        {/* String */}
-        <path
-          d="M60 100 L60 160"
-          stroke="#666"
-          strokeWidth="2"
-          strokeDasharray="4 4"
-        />
-
-        {/* Cat silhouette */}
-        <g transform="translate(10, 10)">
+        <svg
+          width="120"
+          height="160"
+          viewBox="0 0 120 160"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* String */}
           <path
-            d={pose.path}
-            fill={color}
+            d="M60 100 L60 160"
+            stroke="#666"
+            strokeWidth="2"
+            strokeDasharray="4 4"
           />
-          {/* Eyes */}
-          <circle cx="40" cy="60" r="1" fill="#333" />
-          <circle cx="60" cy="60" r="1" fill="#333" />
-          {/* Whiskers */}
-          <g stroke="#333" strokeWidth="0.5">
-            <path d="M35 62 L25 60 M35 63 L25 63 M35 64 L25 66" />
-            <path d="M65 62 L75 60 M65 63 L75 63 M65 64 L75 66" />
+
+          {/* Cat silhouette */}
+          <g transform="translate(10, 10)">
+            <path
+              d={pose.path}
+              fill={color}
+            />
+            {/* Eyes */}
+            <circle cx="40" cy="60" r="1" fill="#333" />
+            <circle cx="60" cy="60" r="1" fill="#333" />
+            {/* Whiskers */}
+            <g stroke="#333" strokeWidth="0.5">
+              <path d="M35 62 L25 60 M35 63 L25 63 M35 64 L25 66" />
+              <path d="M65 62 L75 60 M65 63 L75 63 M65 64 L75 66" />
+            </g>
           </g>
-        </g>
-      </svg>
-    </motion.div>
+        </svg>
+      </motion.div>
+    </AnimatePresence>
   );
 }
