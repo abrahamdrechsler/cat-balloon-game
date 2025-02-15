@@ -8,39 +8,39 @@ interface BalloonProps {
   onPop: (id: number) => void;
 }
 
-// Array of SVG paths for different cat poses
+// Array of SVG paths for different cat poses inspired by the reference image
 const catPoses = [
-  // Sitting cat
   {
-    body: "M40 80 C40 50 50 30 60 30 C70 30 80 50 80 80 C80 95 70 100 60 100 C50 100 40 95 40 80",
-    tail: "M75 80 Q85 75 90 85 Q95 95 85 100",
-    ears: "M50 35 L60 25 L70 35 M70 35 L80 25 L90 35",
-    head: "M55 40 Q60 35 65 40 Q70 35 75 40 Q80 50 75 60 Q60 70 55 60 Q50 50 55 40"
+    // Sitting cat looking up
+    path: "M50 80 C40 80 35 75 35 65 L35 45 C35 35 45 30 50 30 C55 30 65 35 65 45 L65 65 C65 75 60 80 50 80 Z M45 40 L35 30 L45 35 M55 40 L65 30 L55 35 M40 50 C45 48 55 48 60 50"
   },
-  // Stretching cat
   {
-    body: "M30 80 C30 60 40 50 60 50 C80 50 90 60 90 80 C90 95 80 100 60 100 C40 100 30 95 30 80",
-    tail: "M85 75 Q95 70 100 80 Q105 90 95 95",
-    ears: "M45 55 L55 45 L65 55 M65 55 L75 45 L85 55",
-    head: "M50 60 Q60 55 70 60 Q75 65 70 75 Q60 80 50 75 Q45 70 50 60"
+    // Lounging cat
+    path: "M30 70 C30 60 35 55 45 55 L75 55 C85 55 90 60 90 70 C90 80 85 85 75 85 L45 85 C35 85 30 80 30 70 Z M40 60 L30 50 L40 55 M80 60 L90 50 L80 55 M45 65 C55 63 65 63 75 65"
   },
-  // Walking cat
   {
-    body: "M35 75 C35 45 45 35 60 35 C75 35 85 45 85 75 C85 90 75 95 60 95 C45 95 35 90 35 75",
-    tail: "M80 70 Q90 65 95 75 Q100 85 90 90",
-    ears: "M45 40 L55 30 L65 40 M65 40 L75 30 L85 40",
-    head: "M50 45 Q60 40 70 45 Q75 50 70 60 Q60 65 50 60 Q45 55 50 45"
+    // Walking cat
+    path: "M40 75 C30 75 25 70 25 60 C25 50 30 45 40 45 L60 45 C70 45 75 50 75 60 C75 70 70 75 60 75 L40 75 Z M35 50 L25 40 L35 45 M65 50 L75 40 L65 45 M40 55 C45 53 55 53 60 55"
+  },
+  {
+    // Stretching cat
+    path: "M20 80 C20 70 25 65 35 65 L85 65 C95 65 100 70 100 80 C100 90 95 95 85 95 L35 95 C25 95 20 90 20 80 Z M30 70 L20 60 L30 65 M90 70 L100 60 L90 65 M35 75 C45 73 75 73 85 75"
+  },
+  {
+    // Tail-up cat
+    path: "M45 85 C35 85 30 80 30 70 C30 60 35 55 45 55 L65 55 C75 55 80 60 80 70 C80 80 75 85 65 85 L45 85 Z M40 60 L30 50 L40 55 M70 60 L80 50 L70 55 M45 65 C50 63 60 63 65 65 M65 55 C70 45 75 35 70 30"
   }
 ];
 
 export default function Balloon({ id, x, color, onPop }: BalloonProps) {
+  // Use the balloon's id to select a consistent pose
+  const poseIndex = id % catPoses.length;
+  const pose = catPoses[poseIndex];
+
   const handleClick = () => {
     playPopSound();
     onPop(id);
   };
-
-  // Select random pose
-  const pose = catPoses[Math.floor(Math.random() * catPoses.length)];
 
   return (
     <motion.div
@@ -68,30 +68,19 @@ export default function Balloon({ id, x, color, onPop }: BalloonProps) {
           strokeDasharray="4 4"
         />
 
-        {/* Cat shape using selected pose */}
-        <g transform="translate(0, -10)">
-          {/* Body */}
-          <path d={pose.body} fill={color} />
-
-          {/* Tail */}
-          <path d={pose.tail} fill={color} />
-
-          {/* Ears */}
-          <path d={pose.ears} fill={color} />
-
-          {/* Head */}
-          <path d={pose.head} fill={color} />
-
-          {/* Face details */}
-          <circle cx="58" cy="52" r="1.5" fill="#333" /> {/* Left eye */}
-          <circle cx="68" cy="52" r="1.5" fill="#333" /> {/* Right eye */}
-          <circle cx="63" cy="55" r="1" fill="#FF69B4" /> {/* Nose */}
-          <path d="M60 57 Q63 59 66 57" stroke="#333" strokeWidth="1" fill="none" /> {/* Mouth */}
-
+        {/* Cat silhouette */}
+        <g transform="translate(10, 10)">
+          <path
+            d={pose.path}
+            fill={color}
+          />
+          {/* Eyes */}
+          <circle cx="40" cy="60" r="1" fill="#333" />
+          <circle cx="60" cy="60" r="1" fill="#333" />
           {/* Whiskers */}
           <g stroke="#333" strokeWidth="0.5">
-            <path d="M55 54 L45 52 M55 55 L45 55 M55 56 L45 58" />
-            <path d="M71 54 L81 52 M71 55 L81 55 M71 56 L81 58" />
+            <path d="M35 62 L25 60 M35 63 L25 63 M35 64 L25 66" />
+            <path d="M65 62 L75 60 M65 63 L75 63 M65 64 L75 66" />
           </g>
         </g>
       </svg>
