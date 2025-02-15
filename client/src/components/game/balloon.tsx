@@ -37,6 +37,11 @@ export default function Balloon({ id, x, color, onPop }: BalloonProps) {
   const poseIndex = id % catPoses.length;
   const pose = catPoses[poseIndex];
 
+  // Every 4th balloon moves 25% faster
+  const isFaster = id % 4 === 0;
+  const baseDuration = 8;
+  const duration = isFaster ? baseDuration * 0.75 : baseDuration;
+
   const handleClick = () => {
     playPopSound();
     onPop(id);
@@ -44,13 +49,20 @@ export default function Balloon({ id, x, color, onPop }: BalloonProps) {
 
   return (
     <motion.div
-      initial={{ y: window.innerHeight + 100 }}
+      initial={{ y: window.innerHeight + 100, x }}
       animate={{
         y: -200,
-        transition: { duration: 8, ease: "linear" }
+        x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
+        transition: {
+          y: { duration, ease: "linear" },
+          x: { 
+            duration: 4, 
+            repeat: Infinity,
+            ease: "easeInOut" 
+          }
+        }
       }}
       className="absolute cursor-pointer"
-      style={{ left: x }}
       onClick={handleClick}
     >
       <svg
