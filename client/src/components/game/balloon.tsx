@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { playPopSound } from "@/lib/sounds";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface BalloonProps {
   id: number;
@@ -23,19 +23,19 @@ const catPoses = [
   {
     // Walking cat
     path: "M40 75 C30 75 25 70 25 60 C25 50 30 45 40 45 L60 45 C70 45 75 50 75 60 C75 70 70 75 60 75 L40 75 Z M35 50 L25 40 L35 45 M65 50 L75 40 L65 45 M40 55 C45 53 55 53 60 55"
-  },
-  {
-    // Stretching cat
-    path: "M20 80 C20 70 25 65 35 65 L85 65 C95 65 100 70 100 80 C100 90 95 95 85 95 L35 95 C25 95 20 90 20 80 Z M30 70 L20 60 L30 65 M90 70 L100 60 L90 65 M35 75 C45 73 75 73 85 75"
-  },
-  {
-    // Tail-up cat
-    path: "M45 85 C35 85 30 80 30 70 C30 60 35 55 45 55 L65 55 C75 55 80 60 80 70 C80 80 75 85 65 85 L45 85 Z M40 60 L30 50 L40 55 M70 60 L80 50 L70 55 M45 65 C50 63 60 63 65 65 M65 55 C70 45 75 35 70 30"
   }
 ];
 
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
+  const [windowHeight, setWindowHeight] = useState(0);
+
+  useEffect(() => {
+    setWindowHeight(window.innerHeight);
+    const handleResize = () => setWindowHeight(window.innerHeight);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Use the balloon's id to select a consistent pose
   const poseIndex = id % catPoses.length;
@@ -54,12 +54,16 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
     setTimeout(() => onPop(id), 150);
   };
 
+  if (!windowHeight) {
+    return null; // Wait for window height to be available
+  }
+
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: window.innerHeight + 100, x, scale: 1, opacity: 1 }}
+        initial={{ y: windowHeight + 100, x, scale: 1, opacity: 1 }}
         animate={{
-          y: -window.innerHeight, // Move beyond the top of the screen
+          y: -100, // Move just beyond the top of the screen
           x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
           scale: isPopping ? [1, 1.2, 0] : 1,
           opacity: isPopping ? [1, 1, 0] : 1,

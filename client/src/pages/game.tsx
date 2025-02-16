@@ -14,9 +14,19 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS[DEFAULT_DIFFICULTY].duration);
   const [balloons, setBalloons] = useState<Array<{ id: number; x: number; color: string }>>([]);
   const [nextBalloonId, setNextBalloonId] = useState(1);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
 
   const settings = DIFFICULTY_LEVELS[difficulty];
+
+  // Initialize window width
+  useEffect(() => {
+    const updateWidth = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    updateWidth(); // Set initial width
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -36,9 +46,9 @@ export default function Game() {
 
   useEffect(() => {
     let spawnTimer: NodeJS.Timeout;
-    if (isPlaying && isInitialized) {
+    if (isPlaying && windowWidth > 0) {
       spawnTimer = setInterval(() => {
-        const x = Math.random() * (window.innerWidth - 100);
+        const x = Math.random() * (windowWidth - 100);
         const colors = ["#FF69B4", "#87CEEB", "#98FB98", "#DDA0DD", "#F0E68C"];
         const color = colors[Math.floor(Math.random() * colors.length)];
 
@@ -47,12 +57,11 @@ export default function Game() {
       }, settings.spawnInterval);
     }
     return () => clearInterval(spawnTimer);
-  }, [isPlaying, nextBalloonId, settings.spawnInterval, isInitialized]);
+  }, [isPlaying, nextBalloonId, settings.spawnInterval, windowWidth]);
 
   const startGame = async () => {
     try {
-      await initializeAudio();
-      setIsInitialized(true);
+      await initializeAudio().catch(console.error); // Don't let audio initialization block the game
       setIsPlaying(true);
       setScore(0);
       setTimeLeft(settings.duration);
@@ -60,9 +69,8 @@ export default function Game() {
       setNextBalloonId(1);
       setShowDifficulty(false);
     } catch (error) {
-      console.error("Failed to initialize game:", error);
-      // Continue with the game even if audio fails
-      setIsInitialized(true);
+      console.error("Failed to start game:", error);
+      // Continue with the game even if there's an error
       setIsPlaying(true);
       setScore(0);
       setTimeLeft(settings.duration);
@@ -80,13 +88,16 @@ export default function Game() {
   const handleRestart = () => {
     setShowDifficulty(true);
     setIsPlaying(false);
-    setIsInitialized(false);
   };
 
   const handleDifficultySelect = (selectedDifficulty: string) => {
     setDifficulty(selectedDifficulty);
     startGame();
   };
+
+  if (!windowWidth) {
+    return null; // Wait for window width to be available
+  }
 
   return (
     <div className="game-container">
