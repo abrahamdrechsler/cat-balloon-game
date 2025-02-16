@@ -1,6 +1,7 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
+// Update file extensions to .mp3 since that's what we're converting to
 const MEOW_FILES = [
   'meow2.mp3',
   'meow3.mp3',
