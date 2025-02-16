@@ -27,7 +27,7 @@ export async function initializeAudio() {
     for (const soundFile of MEOW_FILES) {
       try {
         console.log(`Attempting to load sound: ${soundFile}`);
-        const response = await fetch(`./assets/${soundFile}`);
+        const response = await fetch(`/assets/${soundFile}`);
 
         if (!response.ok) {
           console.error(`Failed to load ${soundFile}:`, response.status, response.statusText);
@@ -37,9 +37,13 @@ export async function initializeAudio() {
         const arrayBuffer = await response.arrayBuffer();
         console.log(`Successfully fetched ${soundFile}, size:`, arrayBuffer.byteLength);
 
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        catSounds.push(audioBuffer);
-        console.log(`Successfully decoded ${soundFile}`);
+        try {
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+          catSounds.push(audioBuffer);
+          console.log(`Successfully decoded ${soundFile}`);
+        } catch (decodeError) {
+          console.error(`Failed to decode ${soundFile}:`, decodeError);
+        }
       } catch (error) {
         console.error(`Error loading ${soundFile}:`, error);
       }
