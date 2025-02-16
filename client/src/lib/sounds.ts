@@ -1,13 +1,17 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
-// List of meow sound files to load
+// List of meow sound files to load - these should be in the public/assets directory
 const MEOW_FILES = [
-  'meow2.mp3',  // Remove meow1.mp3 since it's failing to decode
+  'meow2.mp3',  
   'meow3.mp3',
   'Recording.mp3',
   'Recording (3).mp3'
-].map(file => `/src/assets/${file}`);
+].map(file => {
+  // In development, use absolute path; in production, use relative path
+  const isDev = import.meta.env.DEV;
+  return isDev ? `/assets/${file}` : `./assets/${file}`;
+});
 
 // Simple beep as fallback sound if cat sounds fail to load
 const createFallbackSound = (context: AudioContext) => {
@@ -38,6 +42,7 @@ export async function initializeAudio() {
         const response = await fetch(soundFile);
 
         if (!response.ok) {
+          console.warn(`Failed to load sound file: ${soundFile}`);
           continue; // Skip this file and try the next one
         }
 
@@ -47,11 +52,11 @@ export async function initializeAudio() {
           const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
           catSounds.push(audioBuffer);
         } catch (decodeError) {
-          // Silently skip failed decodes
+          console.warn(`Failed to decode sound file: ${soundFile}`);
           continue;
         }
       } catch (error) {
-        // Silently skip failed loads
+        console.warn(`Failed to fetch sound file: ${soundFile}`);
         continue;
       }
     }
