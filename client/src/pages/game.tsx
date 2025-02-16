@@ -13,15 +13,16 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS[DEFAULT_DIFFICULTY].duration);
   const [balloons, setBalloons] = useState<Array<{ id: number; x: number; color: string }>>([]);
   const [nextBalloonId, setNextBalloonId] = useState(1);
-  const [windowWidth, setWindowWidth] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const settings = DIFFICULTY_LEVELS[difficulty];
 
   useEffect(() => {
-    const updateWidth = () => setWindowWidth(window.innerWidth);
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    function handleResize() {
+      setWindowWidth(window.innerWidth);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -73,16 +74,6 @@ export default function Game() {
     setShowDifficulty(true);
     setIsPlaying(false);
   };
-
-  if (!windowWidth) {
-    return (
-      <div className="game-container">
-        <div className="game-content">
-          <div className="text-center">Loading game...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="game-container">

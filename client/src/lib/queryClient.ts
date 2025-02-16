@@ -49,6 +49,8 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: Infinity,
       retry: false,
+      cacheTime: 0, // Disable caching completely
+      gcTime: 0, // Disable garbage collection
     },
     mutations: {
       retry: false,
