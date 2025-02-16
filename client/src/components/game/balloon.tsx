@@ -26,8 +26,8 @@ const catPoses = [
   }
 ];
 
-// Dog shape SVG path
-const dogPath = "M40 80 C20 80 15 70 15 50 C15 30 25 20 40 20 C55 20 65 30 65 50 C65 70 60 80 40 80 Z M30 35 L20 25 L30 30 M50 35 L60 25 L50 30 M35 45 C40 43 45 43 50 45 M25 60 L15 65 M55 60 L65 65";
+// Dog shape SVG path - Updated to match bulldog silhouette
+const dogPath = "M40 75 C25 75 15 65 15 50 C15 35 25 25 40 25 C55 25 65 35 65 50 C65 65 55 75 40 75 Z M30 40 C30 35 25 35 25 40 L25 45 C25 50 30 50 30 45 L30 40 Z M50 40 C50 35 55 35 55 40 L55 45 C55 50 50 50 50 45 L50 40 Z M40 45 L40 60 C30 60 25 55 25 50 M40 60 C50 60 55 55 55 50 M40 60 L40 65";
 
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
@@ -57,7 +57,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
     return null;
   }
 
-  const verticalDistance = windowHeight + 300; // Add extra distance to ensure balloons float completely off screen
+  const verticalDistance = windowHeight + 300;
 
   return (
     <AnimatePresence>
@@ -117,13 +117,13 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
               fill={isDog ? "#ff6b6b" : color}
             />
             {/* Eyes */}
-            <circle cx="40" cy="60" r="1" fill="#333" />
-            <circle cx="60" cy="60" r="1" fill="#333" />
+            <circle cx="40" cy="45" r="1.5" fill="#333" />
+            <circle cx="60" cy="45" r="1.5" fill="#333" />
             {/* Whiskers */}
-            <g stroke="#333" strokeWidth="0.5">
+            {/*<g stroke="#333" strokeWidth="0.5">
               <path d="M35 62 L25 60 M35 63 L25 63 M35 64 L25 66" />
               <path d="M65 62 L75 60 M65 63 L75 63 M65 64 L75 66" />
-            </g>
+            </g>*/}
           </g>
         </svg>
       </motion.div>
