@@ -1,5 +1,6 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
+let isAudioInitialized = false;
 
 // Update file extensions to .mp3 since that's what we're converting to
 const MEOW_FILES = [
@@ -10,23 +11,14 @@ const MEOW_FILES = [
 ];
 
 export async function initializeAudio() {
+  // If already initialized, don't try again
+  if (isAudioInitialized) {
+    return;
+  }
+
   try {
-    // Create AudioContext lazily on first user interaction
-    const resumeAudioContext = async () => {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      }
-      if (audioContext.state === 'suspended') {
-        await audioContext.resume();
-      }
-    };
-
-    // Add click handler to resume audio context
-    document.addEventListener('click', () => {
-      resumeAudioContext().catch(console.error);
-    }, { once: true });
-
-    await resumeAudioContext();
+    // Only create AudioContext when explicitly called (after user interaction)
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
     const soundPath = '/assets/';
     console.log('Loading sounds from:', soundPath);
@@ -44,24 +36,17 @@ export async function initializeAudio() {
         }
 
         const arrayBuffer = await response.arrayBuffer();
-        if (!arrayBuffer || arrayBuffer.byteLength === 0) {
-          console.warn(`Empty file received for ${soundFile}`);
-          continue;
-        }
+        console.log(`Successfully fetched ${soundFile}, size:`, arrayBuffer.byteLength);
 
         if (!audioContext) {
           throw new Error('AudioContext not initialized');
         }
 
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        if (!audioBuffer || audioBuffer.duration === 0) {
-          console.warn(`Invalid audio data for ${soundFile}`);
-          continue;
-        }
+        console.log(`Successfully decoded ${soundFile}`);
 
         catSounds.push(audioBuffer);
         loadedAnySound = true;
-        console.log(`Successfully loaded ${soundFile}`);
       } catch (error) {
         console.warn(`Error loading ${soundFile}:`, error);
         continue;
@@ -69,34 +54,29 @@ export async function initializeAudio() {
     }
 
     if (!loadedAnySound) {
-      throw new Error('No sounds could be loaded');
+      console.warn('No sounds could be loaded');
+      return;
     }
 
+    isAudioInitialized = true;
     console.log(`Successfully loaded ${catSounds.length} cat sounds`);
   } catch (error) {
     console.error('Audio initialization failed:', error);
     // Allow the game to continue without sound
-    return;
   }
 }
 
 export function playPopSound() {
   if (!audioContext || catSounds.length === 0) {
-    console.warn('No sounds available to play');
-    return;
+    return; // Silently fail if audio isn't ready
   }
 
   try {
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-
     const source = audioContext.createBufferSource();
     const soundIndex = Math.floor(Math.random() * catSounds.length);
     const randomSound = catSounds[soundIndex];
 
-    if (!randomSound || !randomSound.duration) {
-      console.warn(`Invalid sound buffer at index ${soundIndex}`);
+    if (!randomSound) {
       return;
     }
 

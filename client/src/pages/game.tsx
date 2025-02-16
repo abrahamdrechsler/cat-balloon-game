@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import Balloon from "@/components/game/balloon";
 import GameOver from "@/components/game/game-over";
 import DifficultySelect from "@/components/game/difficulty-select";
-import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY, type DifficultySettings } from "@/lib/constants";
+import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY } from "@/lib/constants";
 import { initializeAudio } from "@/lib/sounds";
 
 export default function Game() {
@@ -18,16 +18,11 @@ export default function Game() {
 
   const settings = DIFFICULTY_LEVELS[difficulty];
 
-  // Initialize window width
   useEffect(() => {
-    try {
-      const updateWidth = () => setWindowWidth(window.innerWidth);
-      updateWidth(); // Set initial width
-      window.addEventListener('resize', updateWidth);
-      return () => window.removeEventListener('resize', updateWidth);
-    } catch (error) {
-      console.error("Failed to initialize window dimensions:", error);
-    }
+    const updateWidth = () => setWindowWidth(window.innerWidth);
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
   useEffect(() => {
@@ -53,7 +48,6 @@ export default function Game() {
         const x = Math.random() * (windowWidth - 100);
         const colors = ["#FF69B4", "#87CEEB", "#98FB98", "#DDA0DD", "#F0E68C"];
         const color = colors[Math.floor(Math.random() * colors.length)];
-
         setBalloons((prev) => [...prev, { id: nextBalloonId, x, color }]);
         setNextBalloonId((prev) => prev + 1);
       }, settings.spawnInterval);
@@ -61,30 +55,25 @@ export default function Game() {
     return () => clearInterval(spawnTimer);
   }, [isPlaying, nextBalloonId, settings.spawnInterval, windowWidth]);
 
-  const startGame = async () => {
-    if (!windowWidth) {
-      console.error("Window dimensions not initialized");
-      return;
-    }
+  const handleDifficultySelect = async (selectedDifficulty: string) => {
+    setDifficulty(selectedDifficulty);
 
     try {
-      // Initialize audio context
-      await initializeAudio().catch(console.error);
+      // Initialize audio first (after user interaction)
+      await initializeAudio();
 
-      // Reset game state
+      // Then start the game
       setScore(0);
-      setTimeLeft(settings.duration);
+      setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
       setBalloons([]);
       setNextBalloonId(1);
-
-      // Start the game
       setShowDifficulty(false);
       setIsPlaying(true);
     } catch (error) {
-      console.error("Failed to start game:", error);
-      // If initialization fails, continue without audio
+      console.warn("Starting game without audio:", error);
+      // Continue the game even if audio fails
       setScore(0);
-      setTimeLeft(settings.duration);
+      setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
       setBalloons([]);
       setNextBalloonId(1);
       setShowDifficulty(false);
@@ -102,16 +91,6 @@ export default function Game() {
     setIsPlaying(false);
   };
 
-  const handleDifficultySelect = (selectedDifficulty: string) => {
-    if (!windowWidth) {
-      console.error("Window dimensions not initialized");
-      return;
-    }
-    setDifficulty(selectedDifficulty);
-    startGame();
-  };
-
-  // Wait for window dimensions before rendering
   if (!windowWidth) {
     return (
       <div className="game-container">
@@ -125,7 +104,6 @@ export default function Game() {
   return (
     <div className="game-container">
       <div className="game-content">
-        {/* HUD */}
         <div className="fixed top-4 left-4 right-4 flex justify-between items-center z-50">
           <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 font-bold text-lg">
             Score: {score}
@@ -135,7 +113,6 @@ export default function Game() {
           </div>
         </div>
 
-        {/* Game Area */}
         <div className="game-canvas relative">
           {balloons.map((balloon) => (
             <Balloon
@@ -149,7 +126,6 @@ export default function Game() {
           ))}
         </div>
 
-        {/* Start/Game Over/Difficulty Select */}
         {!isPlaying && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
             {showDifficulty ? (
