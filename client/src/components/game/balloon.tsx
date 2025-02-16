@@ -10,36 +10,6 @@ interface BalloonProps {
   isDog?: boolean;
 }
 
-// Updated cat face design to match p5.js sketch
-const catPath = `
-  M 50 80 
-  A 30 30 0 1 1 50 20 
-  A 30 30 0 1 1 50 80
-  M 35 50 L 15 45
-  M 35 48 L 15 48
-  M 35 52 L 15 52
-  M 65 50 L 85 45
-  M 65 48 L 85 48
-  M 65 52 L 85 52
-  M 30 35 L 40 45 L 25 25
-  M 70 35 L 60 45 L 75 25
-  M 45 55 L 50 60 L 55 55
-`;
-
-// Updated dog face design with more distinct features
-const dogPath = `
-  M 50 70
-  C 35 70 20 55 20 45
-  C 20 30 35 20 50 20
-  C 65 20 80 30 80 45
-  C 80 55 65 70 50 70
-  M 30 40 C 25 40 25 45 30 50
-  M 70 40 C 75 40 75 45 70 50
-  M 45 55 C 47 58 53 58 55 55
-  M 45 40 L 35 35
-  M 55 40 L 65 35
-`;
-
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
@@ -66,6 +36,132 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
   }
 
   const verticalDistance = windowHeight + 300;
+
+  const CatBalloon = () => (
+    <svg
+      width="120"
+      height="160"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* String */}
+      <path
+        d="M50 80 L50 160"
+        stroke="#666"
+        strokeWidth="2"
+        strokeDasharray="4 4"
+      />
+
+      {/* Head */}
+      <circle 
+        cx="50" 
+        cy="50" 
+        r="30" 
+        fill={color}
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Left Ear */}
+      <path
+        d="M 30 35 L 42.5 26.25 L 27.5 20 Z"
+        fill={color}
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Right Ear */}
+      <path
+        d="M 70 35 L 57.5 26.25 L 72.5 20 Z"
+        fill={color}
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Left Whiskers */}
+      <g stroke="#333" strokeWidth="1">
+        <line x1="35" y1="50" x2="15" y2="50" />
+        <line x1="35" y1="45" x2="15" y2="42" />
+        <line x1="35" y1="55" x2="15" y2="58" />
+      </g>
+
+      {/* Right Whiskers */}
+      <g stroke="#333" strokeWidth="1">
+        <line x1="65" y1="50" x2="85" y2="50" />
+        <line x1="65" y1="45" x2="85" y2="42" />
+        <line x1="65" y1="55" x2="85" y2="58" />
+      </g>
+
+      {/* Nose */}
+      <path
+        d="M 45 55 L 50 60 L 55 55 Z"
+        fill="#FFB6C1"
+        stroke="#333"
+        strokeWidth="1"
+      />
+
+      {/* Eyes */}
+      <circle cx="40" cy="45" r="2" fill="#333" />
+      <circle cx="60" cy="45" r="2" fill="#333" />
+    </svg>
+  );
+
+  const DogBalloon = () => (
+    <svg
+      width="120"
+      height="160"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* String */}
+      <path
+        d="M50 80 L50 160"
+        stroke="#666"
+        strokeWidth="2"
+        strokeDasharray="4 4"
+      />
+
+      {/* Head */}
+      <circle 
+        cx="50" 
+        cy="50" 
+        r="30" 
+        fill={color}
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Left Ear */}
+      <path
+        d="M 30 30 C 20 25 15 35 25 40"
+        fill={color}
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Right Ear */}
+      <path
+        d="M 70 30 C 80 25 85 35 75 40"
+        fill={color}
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Snout */}
+      <path
+        d="M 45 55 C 47 62 53 62 55 55"
+        fill="none"
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Eyes */}
+      <circle cx="40" cy="45" r="2" fill="#333" />
+      <circle cx="60" cy="45" r="2" fill="#333" />
+    </svg>
+  );
 
   return (
     <AnimatePresence>
@@ -103,33 +199,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         className="cursor-pointer"
         onClick={handleClick}
       >
-        <svg
-          width="120"
-          height="160"
-          viewBox="0 0 100 100"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* String */}
-          <path
-            d="M50 80 L50 160"
-            stroke="#666"
-            strokeWidth="2"
-            strokeDasharray="4 4"
-          />
-
-          {/* Animal face */}
-          <path
-            d={isDog ? dogPath : catPath}
-            fill={color}
-            stroke="#333"
-            strokeWidth="1.5"
-          />
-
-          {/* Eyes */}
-          <circle cx="35" cy="45" r="2" fill="#333" />
-          <circle cx="65" cy="45" r="2" fill="#333" />
-        </svg>
+        {isDog ? <DogBalloon /> : <CatBalloon />}
       </motion.div>
     </AnimatePresence>
   );
