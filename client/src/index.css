@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground min-h-screen m-0 p-0 overflow-hidden;
+    @apply font-sans antialiased bg-gradient-to-br from-pink-200 to-violet-200 text-foreground min-h-screen m-0 p-0 overflow-hidden;
   }
 }
 
@@ -26,6 +26,6 @@
   }
 
   .game-canvas {
-    @apply w-full h-[80vh] max-h-[600px] bg-white rounded-lg shadow-lg relative;
+    @apply w-full h-[80vh] relative;
   }
 }

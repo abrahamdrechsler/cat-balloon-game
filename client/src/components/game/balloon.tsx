@@ -59,7 +59,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
       <motion.div
         initial={{ y: window.innerHeight + 100, x, scale: 1, opacity: 1 }}
         animate={{
-          y: -200,
+          y: -window.innerHeight, // Move beyond the top of the screen
           x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
           scale: isPopping ? [1, 1.2, 0] : 1,
           opacity: isPopping ? [1, 1, 0] : 1,
