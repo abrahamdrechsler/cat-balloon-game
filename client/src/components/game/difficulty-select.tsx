@@ -1,12 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DIFFICULTY_LEVELS } from "@/lib/constants";
+import { useState } from "react";
 
 interface DifficultySelectProps {
   onSelect: (difficulty: string) => void;
 }
 
 export default function DifficultySelect({ onSelect }: DifficultySelectProps) {
+  const [isSelecting, setIsSelecting] = useState(false);
+
+  const handleSelect = async (difficulty: string) => {
+    if (isSelecting) return; // Prevent double-clicks
+    try {
+      setIsSelecting(true);
+      onSelect(difficulty);
+    } catch (error) {
+      console.error("Error selecting difficulty:", error);
+    } finally {
+      setIsSelecting(false);
+    }
+  };
+
   return (
     <Card className="w-[90%] max-w-md">
       <CardHeader>
@@ -19,7 +34,8 @@ export default function DifficultySelect({ onSelect }: DifficultySelectProps) {
             size="lg"
             variant={key === "normal" ? "default" : "outline"}
             className="w-full text-xl py-6 relative group"
-            onClick={() => onSelect(key)}
+            onClick={() => handleSelect(key)}
+            disabled={isSelecting}
           >
             <div className="flex flex-col items-center">
               <span className="text-2xl mb-1">{settings.name}</span>

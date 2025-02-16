@@ -61,22 +61,31 @@ export default function Game() {
 
   const startGame = async () => {
     try {
-      await initializeAudio().catch(console.error); // Don't let audio initialization block the game
-      setIsPlaying(true);
+      if (!windowWidth) {
+        throw new Error("Window dimensions not initialized");
+      }
+
+      // Initialize audio context
+      await initializeAudio().catch(console.error);
+
+      // Reset game state
       setScore(0);
       setTimeLeft(settings.duration);
       setBalloons([]);
       setNextBalloonId(1);
+
+      // Start the game
       setShowDifficulty(false);
+      setIsPlaying(true);
     } catch (error) {
       console.error("Failed to start game:", error);
-      // Continue with the game even if there's an error
-      setIsPlaying(true);
+      // If initialization fails, try to start without audio
       setScore(0);
       setTimeLeft(settings.duration);
       setBalloons([]);
       setNextBalloonId(1);
       setShowDifficulty(false);
+      setIsPlaying(true);
     }
   };
 
@@ -91,6 +100,10 @@ export default function Game() {
   };
 
   const handleDifficultySelect = (selectedDifficulty: string) => {
+    if (!windowWidth) {
+      console.error("Window dimensions not initialized");
+      return;
+    }
     setDifficulty(selectedDifficulty);
     startGame();
   };

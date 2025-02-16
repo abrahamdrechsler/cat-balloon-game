@@ -1,7 +1,7 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
-// List of meow sound files to load - these should be in the public/assets directory
+// List of meow sound files to load
 const MEOW_FILES = [
   'meow2.mp3',  
   'meow3.mp3',
@@ -28,6 +28,14 @@ const createFallbackSound = (context: AudioContext) => {
 
 export async function initializeAudio() {
   try {
+    if (audioContext) {
+      // If context exists but is suspended, try to resume it
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      return; // Audio is already initialized
+    }
+
     // Create audio context with proper fallback
     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
@@ -67,6 +75,7 @@ export async function initializeAudio() {
     }
   } catch (error) {
     console.error('Failed to initialize audio:', error);
+    throw error; // Let the caller handle the error
   }
 }
 
@@ -97,6 +106,7 @@ export function playPopSound() {
       oscillator.stop(audioContext.currentTime + 0.2);
     }
   } catch (error) {
-    // Silently handle playback errors to avoid console spam
+    console.error('Error playing sound:', error);
+    // Continue game even if sound fails
   }
 }
