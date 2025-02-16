@@ -45,7 +45,7 @@ export async function initAudio() {
   }
 }
 
-// Play a random meow sound with proper error handling
+// Play a random meow sound with proper error handling and increased speed/pitch
 export function playRandomMeow() {
   if (!audioContext || audioBuffers.length === 0) {
     console.warn('Audio not properly initialized or no sounds loaded');
@@ -61,6 +61,7 @@ export function playRandomMeow() {
     const source = audioContext.createBufferSource();
     const randomIndex = Math.floor(Math.random() * audioBuffers.length);
     source.buffer = audioBuffers[randomIndex];
+    source.playbackRate.value = 1.25; // Increase speed and pitch by 1.25x
     source.connect(audioContext.destination);
     source.start(0);
   } catch (error) {
