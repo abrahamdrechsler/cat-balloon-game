@@ -10,11 +10,32 @@ interface BalloonProps {
   isDog?: boolean;
 }
 
-// Simplified cat head design
-const catPath = "M40 75 C25 75 15 65 15 50 C15 35 25 25 40 25 C55 25 65 35 65 50 C65 65 55 75 40 75 Z M25 35 L15 25 M55 35 L65 25 M35 55 L45 55";
+// Simple cat face design based on reference image
+const catPath = `
+  M 50 70 
+  A 25 25 0 0 1 25 45 
+  A 25 25 0 0 1 50 20
+  A 25 25 0 0 1 75 45
+  A 25 25 0 0 1 50 70
+  L 40 45 L 35 50 L 40 55
+  M 60 45 L 65 50 L 60 55
+  M 35 35 L 25 30
+  M 65 35 L 75 30
+  M 48 50 L 52 50
+`;
 
-// Simple dog head design based on reference image
-const dogPath = "M50 80 C30 80 20 70 20 50 C20 30 30 20 50 20 C70 20 80 30 80 50 C80 70 70 80 50 80 Z M35 40 C35 35 30 35 30 40 L30 45 C30 50 35 50 35 45 L35 40 Z M65 40 C65 35 70 35 70 40 L70 45 C70 50 65 50 65 45 L65 40 Z M50 50 L50 60 C40 65 35 60 30 55 M50 60 C60 65 65 60 70 55";
+// Simple dog face design based on reference image
+const dogPath = `
+  M 50 70
+  C 30 70 20 60 20 45
+  C 20 30 35 20 50 20
+  C 65 20 80 30 80 45
+  C 80 60 70 70 50 70
+  M 30 35 C 25 35 20 40 25 45
+  M 70 35 C 75 35 80 40 75 45
+  M 45 50 L 55 50
+  M 48 45 L 52 45
+`;
 
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
@@ -82,30 +103,29 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         <svg
           width="120"
           height="160"
-          viewBox="0 0 120 160"
+          viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           {/* String */}
           <path
-            d="M60 100 L60 160"
+            d="M50 80 L50 160"
             stroke="#666"
             strokeWidth="2"
             strokeDasharray="4 4"
           />
 
-          {/* Animal silhouette */}
-          <g transform="translate(10, 10)">
-            <path
-              d={isDog ? dogPath : catPath}
-              fill={isDog ? "#ff6b6b" : color}
-            />
-            {/* Eyes for both cat and dog */}
-            <circle cx="35" cy="45" r="2" fill="#333" />
-            <circle cx="65" cy="45" r="2" fill="#333" />
-            {/* Nose */}
-            <circle cx="50" cy={isDog ? "55" : "50"} r="2" fill="#333" />
-          </g>
+          {/* Animal face */}
+          <path
+            d={isDog ? dogPath : catPath}
+            fill={isDog ? "#ff6b6b" : color}
+            stroke="#333"
+            strokeWidth="1.5"
+          />
+
+          {/* Eyes */}
+          <circle cx="35" cy="45" r="2" fill="#333" />
+          <circle cx="65" cy="45" r="2" fill="#333" />
         </svg>
       </motion.div>
     </AnimatePresence>
