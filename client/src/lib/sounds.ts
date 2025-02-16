@@ -26,11 +26,8 @@ export async function initializeAudio() {
       await audioContext.resume();
     }
 
-    // Get the base URL based on environment
-    const basePath = window.location.pathname.includes('cat-balloon-pop') 
-      ? '/cat-balloon-pop'  // GitHub Pages path
-      : '';
-    const soundPath = `${basePath}/assets/`;
+    // Simplified asset path for Replit deployment
+    const soundPath = '/assets/';
     console.log('Loading sounds from:', soundPath);
 
     // Load each sound file
