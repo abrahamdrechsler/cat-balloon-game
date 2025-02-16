@@ -11,74 +11,72 @@ const MEOW_FILES = [
 
 export async function initializeAudio() {
   try {
-    if (audioContext) {
+    // Create AudioContext lazily on first user interaction
+    const resumeAudioContext = async () => {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
       if (audioContext.state === 'suspended') {
         await audioContext.resume();
       }
-      return;
-    }
+    };
 
-    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
-      sampleRate: 44100 // Set a fixed sample rate that matches our converted files
-    });
+    // Add click handler to resume audio context
+    document.addEventListener('click', () => {
+      resumeAudioContext().catch(console.error);
+    }, { once: true });
 
-    if (audioContext.state === 'suspended') {
-      await audioContext.resume();
-    }
+    await resumeAudioContext();
 
-    // Simplified asset path for Replit deployment
     const soundPath = '/assets/';
     console.log('Loading sounds from:', soundPath);
 
-    // Load each sound file
-    const loadPromises = MEOW_FILES.map(async (soundFile) => {
+    // Load each sound file with better error handling
+    let loadedAnySound = false;
+    for (const soundFile of MEOW_FILES) {
       try {
-        console.log(`Fetching ${soundPath}${soundFile}...`);
+        console.log(`Attempting to load ${soundFile}...`);
         const response = await fetch(`${soundPath}${soundFile}`);
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          console.warn(`Failed to fetch ${soundFile}: ${response.status}`);
+          continue;
         }
 
         const arrayBuffer = await response.arrayBuffer();
-        if (arrayBuffer.byteLength === 0) {
-          throw new Error('Empty file received');
+        if (!arrayBuffer || arrayBuffer.byteLength === 0) {
+          console.warn(`Empty file received for ${soundFile}`);
+          continue;
         }
 
-        console.log(`Successfully fetched ${soundFile}, size:`, arrayBuffer.byteLength);
+        if (!audioContext) {
+          throw new Error('AudioContext not initialized');
+        }
 
-        const audioBuffer = await new Promise<AudioBuffer>((resolve, reject) => {
-          audioContext!.decodeAudioData(
-            arrayBuffer,
-            (buffer) => resolve(buffer),
-            (error) => reject(new Error(`Failed to decode ${soundFile}: ${error}`))
-          );
-        });
-
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         if (!audioBuffer || audioBuffer.duration === 0) {
-          throw new Error('Invalid audio data');
+          console.warn(`Invalid audio data for ${soundFile}`);
+          continue;
         }
 
-        console.log(`Successfully decoded ${soundFile}, duration:`, audioBuffer.duration);
-        return audioBuffer;
+        catSounds.push(audioBuffer);
+        loadedAnySound = true;
+        console.log(`Successfully loaded ${soundFile}`);
       } catch (error) {
-        console.error(`Error loading ${soundFile}:`, error);
-        return null;
+        console.warn(`Error loading ${soundFile}:`, error);
+        continue;
       }
-    });
+    }
 
-    // Wait for all sounds to load
-    const loadedSounds = await Promise.all(loadPromises);
-    catSounds = loadedSounds.filter((sound): sound is AudioBuffer => sound !== null);
-
-    if (catSounds.length === 0) {
-      throw new Error('No sounds loaded successfully');
+    if (!loadedAnySound) {
+      throw new Error('No sounds could be loaded');
     }
 
     console.log(`Successfully loaded ${catSounds.length} cat sounds`);
   } catch (error) {
     console.error('Audio initialization failed:', error);
-    throw error;
+    // Allow the game to continue without sound
+    return;
   }
 }
 
@@ -98,24 +96,18 @@ export function playPopSound() {
     const randomSound = catSounds[soundIndex];
 
     if (!randomSound || !randomSound.duration) {
-      console.error(`Invalid sound buffer at index ${soundIndex}`);
+      console.warn(`Invalid sound buffer at index ${soundIndex}`);
       return;
     }
 
-    // Create and configure gain node for volume control
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0.35; // Set volume to 35%
 
-    // Connect nodes
     source.buffer = randomSound;
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
-
-    // Start playback with a slightly higher pitch
     source.playbackRate.value = 1.25;
     source.start(0);
-
-    console.log(`Playing sound ${soundIndex + 1} of ${catSounds.length}`);
   } catch (error) {
     console.error('Sound playback failed:', error);
   }

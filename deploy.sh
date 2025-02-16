@@ -1,17 +1,46 @@
 #!/bin/bash
+
 # Build the project
 npm run build
 
 # Check if build was successful
 if [ $? -eq 0 ]; then
-  # Create public/assets directory if it doesn't exist
+  # Create assets directory if it doesn't exist
   mkdir -p dist/public/assets
 
-  # Convert m4a files to mp3 and copy directly to the build output directory
-  ffmpeg -y -i "attached_assets/meow2.m4a" -acodec libmp3lame -q:a 2 -ar 44100 -ac 2 -af "aresample=resampler=soxr" "dist/public/assets/meow2.mp3"
-  ffmpeg -y -i "attached_assets/meow3.m4a" -acodec libmp3lame -q:a 2 -ar 44100 -ac 2 -af "aresample=resampler=soxr" "dist/public/assets/meow3.mp3"
-  ffmpeg -y -i "attached_assets/Recording.m4a" -acodec libmp3lame -q:a 2 -ar 44100 -ac 2 -af "aresample=resampler=soxr" "dist/public/assets/Recording.mp3"
-  ffmpeg -y -i "attached_assets/Recording (3).m4a" -acodec libmp3lame -q:a 2 -ar 44100 -ac 2 -af "aresample=resampler=soxr" "dist/public/assets/Recording (3).mp3"
+  # Define audio files to convert
+  declare -a audio_files=(
+    "meow2.m4a"
+    "meow3.m4a"
+    "Recording.m4a"
+    "Recording (3).m4a"
+  )
+
+  # Convert each audio file
+  for file in "${audio_files[@]}"; do
+    input_file="attached_assets/$file"
+    output_file="dist/public/assets/${file%.m4a}.mp3"
+
+    if [ -f "$input_file" ]; then
+      echo "Converting $file to MP3..."
+      ffmpeg -y -i "$input_file" \
+        -acodec libmp3lame \
+        -q:a 2 \
+        -ar 44100 \
+        -ac 2 \
+        -af "aresample=resampler=soxr" \
+        "$output_file"
+
+      if [ $? -eq 0 ]; then
+        echo "Successfully converted $file"
+      else
+        echo "Failed to convert $file"
+        exit 1
+      fi
+    else
+      echo "Warning: Source file $input_file not found"
+    fi
+  done
 
   echo "Successfully prepared files for static deployment"
   echo "Contents of assets directory:"
