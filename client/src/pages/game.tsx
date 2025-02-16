@@ -14,6 +14,7 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS[DEFAULT_DIFFICULTY].duration);
   const [balloons, setBalloons] = useState<Array<{ id: number; x: number; color: string }>>([]);
   const [nextBalloonId, setNextBalloonId] = useState(1);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const settings = DIFFICULTY_LEVELS[difficulty];
 
@@ -35,7 +36,7 @@ export default function Game() {
 
   useEffect(() => {
     let spawnTimer: NodeJS.Timeout;
-    if (isPlaying) {
+    if (isPlaying && isInitialized) {
       spawnTimer = setInterval(() => {
         const x = Math.random() * (window.innerWidth - 100);
         const colors = ["#FF69B4", "#87CEEB", "#98FB98", "#DDA0DD", "#F0E68C"];
@@ -46,16 +47,29 @@ export default function Game() {
       }, settings.spawnInterval);
     }
     return () => clearInterval(spawnTimer);
-  }, [isPlaying, nextBalloonId, settings.spawnInterval]);
+  }, [isPlaying, nextBalloonId, settings.spawnInterval, isInitialized]);
 
   const startGame = async () => {
-    await initializeAudio();
-    setIsPlaying(true);
-    setScore(0);
-    setTimeLeft(settings.duration);
-    setBalloons([]);
-    setNextBalloonId(1);
-    setShowDifficulty(false);
+    try {
+      await initializeAudio();
+      setIsInitialized(true);
+      setIsPlaying(true);
+      setScore(0);
+      setTimeLeft(settings.duration);
+      setBalloons([]);
+      setNextBalloonId(1);
+      setShowDifficulty(false);
+    } catch (error) {
+      console.error("Failed to initialize game:", error);
+      // Continue with the game even if audio fails
+      setIsInitialized(true);
+      setIsPlaying(true);
+      setScore(0);
+      setTimeLeft(settings.duration);
+      setBalloons([]);
+      setNextBalloonId(1);
+      setShowDifficulty(false);
+    }
   };
 
   const handlePop = (id: number) => {
@@ -66,6 +80,7 @@ export default function Game() {
   const handleRestart = () => {
     setShowDifficulty(true);
     setIsPlaying(false);
+    setIsInitialized(false);
   };
 
   const handleDifficultySelect = (selectedDifficulty: string) => {
