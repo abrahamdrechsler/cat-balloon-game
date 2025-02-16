@@ -2,10 +2,10 @@ let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
 const MEOW_FILES = [
-  'meow2.mp3',
-  'meow3.mp3',
-  'Recording.mp3',
-  'Recording (3).mp3'
+  'meow2.m4a',
+  'meow3.m4a',
+  'Recording.m4a',
+  'Recording (3).m4a'
 ];
 
 export async function initializeAudio() {

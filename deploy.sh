@@ -13,8 +13,15 @@ if [ $? -eq 0 ]; then
     rm -rf public
   fi
 
-  # Ensure assets directory exists
+  # Ensure assets directory exists and copy sound files
   mkdir -p assets
+
+  # Copy all sound files if they exist in the source
+  if [ -d "../client/public/assets" ]; then
+    cp -r ../client/public/assets/*.m4a ./assets/ 2>/dev/null
+    # Remove any .mp3 files if they exist, we only want .m4a
+    rm -f assets/*.mp3
+  fi
 
   # Fix asset paths in index.html to be relative (if it exists)
   if [ -f "index.html" ]; then
