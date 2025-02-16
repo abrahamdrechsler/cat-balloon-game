@@ -20,12 +20,14 @@ export default function Game() {
 
   // Initialize window width
   useEffect(() => {
-    const updateWidth = () => {
-      setWindowWidth(window.innerWidth);
-    };
-    updateWidth(); // Set initial width
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    try {
+      const updateWidth = () => setWindowWidth(window.innerWidth);
+      updateWidth(); // Set initial width
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
+    } catch (error) {
+      console.error("Failed to initialize window dimensions:", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -60,11 +62,12 @@ export default function Game() {
   }, [isPlaying, nextBalloonId, settings.spawnInterval, windowWidth]);
 
   const startGame = async () => {
-    try {
-      if (!windowWidth) {
-        throw new Error("Window dimensions not initialized");
-      }
+    if (!windowWidth) {
+      console.error("Window dimensions not initialized");
+      return;
+    }
 
+    try {
       // Initialize audio context
       await initializeAudio().catch(console.error);
 
@@ -79,7 +82,7 @@ export default function Game() {
       setIsPlaying(true);
     } catch (error) {
       console.error("Failed to start game:", error);
-      // If initialization fails, try to start without audio
+      // If initialization fails, continue without audio
       setScore(0);
       setTimeLeft(settings.duration);
       setBalloons([]);
@@ -108,8 +111,15 @@ export default function Game() {
     startGame();
   };
 
+  // Wait for window dimensions before rendering
   if (!windowWidth) {
-    return null; // Wait for window width to be available
+    return (
+      <div className="game-container">
+        <div className="game-content">
+          <div className="text-center">Loading game...</div>
+        </div>
+      </div>
+    );
   }
 
   return (

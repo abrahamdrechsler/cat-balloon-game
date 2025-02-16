@@ -27,86 +27,63 @@ const createFallbackSound = (context: AudioContext) => {
 };
 
 export async function initializeAudio() {
+  // If audio initialization fails, we'll just continue without sound
   try {
     if (audioContext) {
-      // If context exists but is suspended, try to resume it
       if (audioContext.state === 'suspended') {
-        await audioContext.resume();
+        await audioContext.resume().catch(console.error);
       }
-      return; // Audio is already initialized
+      return;
     }
 
-    // Create audio context with proper fallback
     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
-    // Resume audio context if suspended (needed for some browsers)
     if (audioContext.state === 'suspended') {
-      await audioContext.resume();
+      await audioContext.resume().catch(console.error);
     }
 
-    // Load each meow sound file
+    // Try to load sounds but don't block game start
     for (const soundFile of MEOW_FILES) {
       try {
         const response = await fetch(soundFile);
-
-        if (!response.ok) {
-          console.warn(`Failed to load sound file: ${soundFile}`);
-          continue; // Skip this file and try the next one
-        }
-
+        if (!response.ok) continue;
         const arrayBuffer = await response.arrayBuffer();
-
-        try {
-          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-          catSounds.push(audioBuffer);
-        } catch (decodeError) {
-          console.warn(`Failed to decode sound file: ${soundFile}`);
-          continue;
-        }
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        catSounds.push(audioBuffer);
       } catch (error) {
-        console.warn(`Failed to fetch sound file: ${soundFile}`);
+        console.warn(`Failed to load sound: ${soundFile}`, error);
         continue;
       }
     }
-
-    // Only log if we have no sounds at all
-    if (catSounds.length === 0) {
-      console.warn('No cat sounds loaded, will use fallback sound');
-    }
   } catch (error) {
-    console.error('Failed to initialize audio:', error);
-    throw error; // Let the caller handle the error
+    console.warn('Audio initialization failed:', error);
+    // Don't throw, let the game continue without sound
   }
 }
 
 export function playPopSound() {
-  if (!audioContext) {
-    return;
-  }
+  if (!audioContext) return;
 
   try {
     if (catSounds.length > 0) {
-      // Play a random cat sound
       const source = audioContext.createBufferSource();
       const randomSound = catSounds[Math.floor(Math.random() * catSounds.length)];
       source.buffer = randomSound;
 
-      // Add a gain node for volume control
       const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.4; // Reduce volume to 40%
+      gainNode.gain.value = 0.4;
 
       source.connect(gainNode);
       gainNode.connect(audioContext.destination);
       source.start(0);
     } else {
-      // Use fallback beep sound
       const { oscillator, gainNode } = createFallbackSound(audioContext);
       gainNode.connect(audioContext.destination);
       oscillator.start();
       oscillator.stop(audioContext.currentTime + 0.2);
     }
   } catch (error) {
-    console.error('Error playing sound:', error);
+    console.warn('Sound playback failed:', error);
     // Continue game even if sound fails
   }
 }
