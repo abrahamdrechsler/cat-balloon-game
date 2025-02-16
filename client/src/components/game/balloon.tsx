@@ -10,18 +10,20 @@ interface BalloonProps {
   isDog?: boolean;
 }
 
-// Updated cat face design with better symmetry and more cat-like features
+// Updated cat face design to match p5.js sketch
 const catPath = `
-  M 50 70
-  C 35 70 20 60 20 45
-  C 20 30 35 20 50 20
-  C 65 20 80 30 80 45
-  C 80 60 65 70 50 70
-  M 35 30 L 25 20
-  M 65 30 L 75 20
-  M 35 45 C 30 45 30 50 35 50
-  M 65 45 C 70 45 70 50 65 50
-  M 47 55 L 53 55
+  M 50 80 
+  A 30 30 0 1 1 50 20 
+  A 30 30 0 1 1 50 80
+  M 35 50 L 15 45
+  M 35 48 L 15 48
+  M 35 52 L 15 52
+  M 65 50 L 85 45
+  M 65 48 L 85 48
+  M 65 52 L 85 52
+  M 30 35 L 40 45 L 25 25
+  M 70 35 L 60 45 L 75 25
+  M 45 55 L 50 60 L 55 55
 `;
 
 // Updated dog face design with more distinct features
