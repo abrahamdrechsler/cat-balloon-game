@@ -4,7 +4,7 @@ import Balloon from "@/components/game/balloon";
 import GameOver from "@/components/game/game-over";
 import DifficultySelect from "@/components/game/difficulty-select";
 import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY } from "@/lib/constants";
-import { initializeAudio } from "@/lib/sounds";
+import { playPopSound } from "@/lib/sounds";
 
 export default function Game() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -57,28 +57,20 @@ export default function Game() {
 
   const handleDifficultySelect = (selectedDifficulty: string) => {
     setDifficulty(selectedDifficulty);
-
-    // Start the game first
+    // Start the game immediately
     setScore(0);
     setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
     setBalloons([]);
     setNextBalloonId(1);
     setShowDifficulty(false);
     setIsPlaying(true);
-
-    // Initialize audio after game starts, wrapped in a try-catch
-    // We don't await this since we want the game to start immediately
-    initializeAudio().catch(error => {
-      // Only log unexpected errors
-      if (!(error instanceof DOMException) || error.name !== 'NotAllowedError') {
-        console.warn("Audio initialization error:", error);
-      }
-    });
   };
 
   const handlePop = (id: number) => {
     setBalloons((prev) => prev.filter((balloon) => balloon.id !== id));
     setScore((prev) => prev + settings.scoreMultiplier);
+    // Sound will be initialized on first pop attempt
+    playPopSound();
   };
 
   const handleRestart = () => {

@@ -1,6 +1,6 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
-let isAudioInitialized = false;
+let isInitializing = false;
 
 // Update file extensions to .mp3 since that's what we're converting to
 const MEOW_FILES = [
@@ -11,20 +11,21 @@ const MEOW_FILES = [
 ];
 
 export async function initializeAudio() {
-  // If already initialized, don't try again
-  if (isAudioInitialized) {
+  // If already initialized or currently initializing, don't proceed
+  if (audioContext || isInitializing) {
     return;
   }
 
-  try {
-    // Only create AudioContext when explicitly called (after user interaction)
-    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  isInitializing = true;
 
+  try {
     const soundPath = '/assets/';
     console.log('Loading sounds from:', soundPath);
 
-    // Load each sound file with better error handling
-    let loadedAnySound = false;
+    // Create AudioContext only when needed
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+    // Load each sound file
     for (const soundFile of MEOW_FILES) {
       try {
         console.log(`Attempting to load ${soundFile}...`);
@@ -46,9 +47,7 @@ export async function initializeAudio() {
         console.log(`Successfully decoded ${soundFile}`);
 
         catSounds.push(audioBuffer);
-        loadedAnySound = true;
       } catch (error) {
-        // Specifically ignore storage access errors
         if (error instanceof DOMException && error.name === 'NotAllowedError') {
           console.debug('Storage access not yet allowed - this is expected before user interaction');
           continue;
@@ -58,26 +57,31 @@ export async function initializeAudio() {
       }
     }
 
-    if (!loadedAnySound) {
-      console.warn('No sounds could be loaded');
-      return;
-    }
-
-    isAudioInitialized = true;
     console.log(`Successfully loaded ${catSounds.length} cat sounds`);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'NotAllowedError') {
       console.debug('Storage access not yet allowed - this is expected before user interaction');
-      return;
+    } else {
+      console.error('Audio initialization failed:', error);
     }
-    console.error('Audio initialization failed:', error);
-    // Allow the game to continue without sound
+  } finally {
+    isInitializing = false;
   }
 }
 
 export function playPopSound() {
-  if (!audioContext || catSounds.length === 0) {
-    return; // Silently fail if audio isn't ready
+  // If not initialized, try to initialize first
+  if (!audioContext) {
+    initializeAudio().catch(() => {
+      // Silently fail if initialization fails
+      return;
+    });
+    return;
+  }
+
+  // If no sounds are loaded, just return silently
+  if (catSounds.length === 0) {
+    return;
   }
 
   try {
