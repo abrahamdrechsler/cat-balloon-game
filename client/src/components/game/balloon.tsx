@@ -7,6 +7,7 @@ interface BalloonProps {
   color: string;
   onPop: (id: number) => void;
   speedMultiplier?: number;
+  isDog?: boolean;
 }
 
 // Array of SVG paths for different cat poses
@@ -25,7 +26,10 @@ const catPoses = [
   }
 ];
 
-export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: BalloonProps) {
+// Dog shape SVG path
+const dogPath = "M40 80 C20 80 15 70 15 50 C15 30 25 20 40 20 C55 20 65 30 65 50 C65 70 60 80 40 80 Z M30 35 L20 25 L30 30 M50 35 L60 25 L50 30 M35 45 C40 43 45 43 50 45 M25 60 L15 65 M55 60 L65 65";
+
+export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
 
@@ -53,7 +57,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
     return null;
   }
 
-  const verticalDistance = windowHeight + 300; // Add extra distance to ensure cats float completely off screen
+  const verticalDistance = windowHeight + 300; // Add extra distance to ensure balloons float completely off screen
 
   return (
     <AnimatePresence>
@@ -106,11 +110,11 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
             strokeDasharray="4 4"
           />
 
-          {/* Cat silhouette */}
+          {/* Animal silhouette */}
           <g transform="translate(10, 10)">
             <path
-              d={pose.path}
-              fill={color}
+              d={isDog ? dogPath : pose.path}
+              fill={isDog ? "#ff6b6b" : color}
             />
             {/* Eyes */}
             <circle cx="40" cy="60" r="1" fill="#333" />

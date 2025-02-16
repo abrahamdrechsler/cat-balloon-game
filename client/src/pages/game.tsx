@@ -4,7 +4,14 @@ import Balloon from "@/components/game/balloon";
 import GameOver from "@/components/game/game-over";
 import DifficultySelect from "@/components/game/difficulty-select";
 import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY } from "@/lib/constants";
-import { initAudio, playRandomMeow } from "@/lib/audio";
+import { initAudio, playRandomMeow, playDogBark } from "@/lib/audio";
+
+interface BalloonType {
+  id: number;
+  x: number;
+  color: string;
+  isDog: boolean;
+}
 
 export default function Game() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -12,7 +19,7 @@ export default function Game() {
   const [difficulty, setDifficulty] = useState<string>(DEFAULT_DIFFICULTY);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(DIFFICULTY_LEVELS[DEFAULT_DIFFICULTY].duration);
-  const [balloons, setBalloons] = useState<Array<{ id: number; x: number; color: string }>>([]);
+  const [balloons, setBalloons] = useState<Array<BalloonType>>([]);
   const [nextBalloonId, setNextBalloonId] = useState(1);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -54,7 +61,9 @@ export default function Game() {
         const x = Math.random() * (windowWidth - 100);
         const colors = ["#FF69B4", "#87CEEB", "#98FB98", "#DDA0DD", "#F0E68C"];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        setBalloons((prev) => [...prev, { id: nextBalloonId, x, color }]);
+        // 15% chance to spawn a dog balloon
+        const isDog = Math.random() < 0.15;
+        setBalloons((prev) => [...prev, { id: nextBalloonId, x, color, isDog }]);
         setNextBalloonId((prev) => prev + 1);
       }, settings.spawnInterval);
     }
@@ -72,9 +81,19 @@ export default function Game() {
   };
 
   const handlePop = (id: number) => {
-    setBalloons((prev) => prev.filter((balloon) => balloon.id !== id));
-    setScore((prev) => prev + settings.scoreMultiplier);
-    playRandomMeow(); // Play a random meow sound when a balloon is popped
+    setBalloons((prev) => {
+      const balloon = prev.find(b => b.id === id);
+      if (balloon) {
+        if (balloon.isDog) {
+          setScore((prevScore) => Math.max(0, prevScore - 1)); // Reduce score by 1, but not below 0
+          playDogBark();
+        } else {
+          setScore((prevScore) => prevScore + settings.scoreMultiplier);
+          playRandomMeow();
+        }
+      }
+      return prev.filter(b => b.id !== id);
+    });
   };
 
   const handleRestart = () => {
@@ -103,6 +122,7 @@ export default function Game() {
               color={balloon.color}
               onPop={handlePop}
               speedMultiplier={settings.speedMultiplier}
+              isDog={balloon.isDog}
             />
           ))}
         </div>

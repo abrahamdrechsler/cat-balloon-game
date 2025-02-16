@@ -7,8 +7,11 @@ const meowSounds = [
   '/sounds/meow5.wav'
 ];
 
+const dogSound = '/sounds/dog.wav';
+
 let audioContext: AudioContext | null = null;
 const audioBuffers: AudioBuffer[] = [];
+let dogAudioBuffer: AudioBuffer | null = null;
 
 // Initialize audio context with proper error handling
 export async function initAudio() {
@@ -31,7 +34,7 @@ export async function initAudio() {
       return await audioContext.decodeAudioData(arrayBuffer);
     };
 
-    // Load all sounds with proper error handling
+    // Load all cat sounds with proper error handling
     for (const soundUrl of meowSounds) {
       try {
         const buffer = await loadSound(soundUrl);
@@ -40,6 +43,14 @@ export async function initAudio() {
       } catch (error) {
         console.error(`Failed to load sound ${soundUrl}:`, error);
       }
+    }
+
+    // Load dog sound
+    try {
+      dogAudioBuffer = await loadSound(dogSound);
+      console.log('Successfully loaded dog sound');
+    } catch (error) {
+      console.error('Failed to load dog sound:', error);
     }
   } catch (error) {
     console.error('Failed to initialize audio:', error);
@@ -67,5 +78,26 @@ export function playRandomMeow() {
     source.start(0);
   } catch (error) {
     console.error('Failed to play meow sound:', error);
+  }
+}
+
+// Play dog bark sound
+export function playDogBark() {
+  if (!audioContext || !dogAudioBuffer) {
+    console.warn('Audio not properly initialized or dog sound not loaded');
+    return;
+  }
+
+  try {
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    const source = audioContext.createBufferSource();
+    source.buffer = dogAudioBuffer;
+    source.connect(audioContext.destination);
+    source.start(0);
+  } catch (error) {
+    console.error('Failed to play dog sound:', error);
   }
 }
