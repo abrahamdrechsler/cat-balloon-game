@@ -3,7 +3,8 @@ const meowSounds = [
   '/sounds/meow1.wav',
   '/sounds/meow2.wav',
   '/sounds/meow3.wav',
-  '/sounds/meow4.wav'
+  '/sounds/meow4.wav',
+  '/sounds/meow5.wav'
 ];
 
 let audioContext: AudioContext | null = null;
@@ -61,7 +62,7 @@ export function playRandomMeow() {
     const source = audioContext.createBufferSource();
     const randomIndex = Math.floor(Math.random() * audioBuffers.length);
     source.buffer = audioBuffers[randomIndex];
-    source.playbackRate.value = 1.25; // Increase speed and pitch by 1.25x
+    source.playbackRate.value = 1.5; // Increase speed and pitch by 1.5x
     source.connect(audioContext.destination);
     source.start(0);
   } catch (error) {
