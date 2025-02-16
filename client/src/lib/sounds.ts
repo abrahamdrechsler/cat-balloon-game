@@ -2,10 +2,10 @@ let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
 const MEOW_FILES = [
-  'meow2.m4a',
-  'meow3.m4a',
-  'Recording.m4a',
-  'Recording (3).m4a'
+  'meow2.mp3',
+  'meow3.mp3',
+  'Recording.mp3',
+  'Recording (3).mp3'
 ];
 
 export async function initializeAudio() {
@@ -17,49 +17,68 @@ export async function initializeAudio() {
       return;
     }
 
-    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+      sampleRate: 44100 // Set a fixed sample rate that matches our converted files
+    });
 
     if (audioContext.state === 'suspended') {
       await audioContext.resume();
     }
 
-    // Get the base URL from the current script's source
-    const currentScript = document.currentScript as HTMLScriptElement;
-    const basePath = currentScript?.src.includes('/assets/') ? './assets/' : '/assets/';
-    console.log('Loading sounds from:', basePath);
+    // Get the base URL based on environment
+    const basePath = window.location.origin.includes('github.io') ? '.' : '';
+    const soundPath = `${basePath}/assets/`;
+    console.log('Loading sounds from:', soundPath);
 
     // Load each sound file
-    for (const soundFile of MEOW_FILES) {
+    const loadPromises = MEOW_FILES.map(async (soundFile) => {
       try {
-        const response = await fetch(`${basePath}${soundFile}`);
+        console.log(`Fetching ${soundPath}${soundFile}...`);
+        const response = await fetch(`${soundPath}${soundFile}`);
 
         if (!response.ok) {
-          console.error(`Failed to load ${soundFile}:`, response.status, response.statusText);
-          continue;
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const arrayBuffer = await response.arrayBuffer();
+        if (arrayBuffer.byteLength === 0) {
+          throw new Error('Empty file received');
+        }
+
         console.log(`Successfully fetched ${soundFile}, size:`, arrayBuffer.byteLength);
 
-        try {
-          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-          catSounds.push(audioBuffer);
-          console.log(`Successfully decoded ${soundFile}`);
-        } catch (decodeError) {
-          console.error(`Failed to decode ${soundFile}:`, decodeError);
+        const audioBuffer = await new Promise<AudioBuffer>((resolve, reject) => {
+          audioContext!.decodeAudioData(
+            arrayBuffer,
+            (buffer) => resolve(buffer),
+            (error) => reject(new Error(`Failed to decode ${soundFile}: ${error}`))
+          );
+        });
+
+        if (!audioBuffer || audioBuffer.duration === 0) {
+          throw new Error('Invalid audio data');
         }
+
+        console.log(`Successfully decoded ${soundFile}, duration:`, audioBuffer.duration);
+        return audioBuffer;
       } catch (error) {
         console.error(`Error loading ${soundFile}:`, error);
+        return null;
       }
-    }
+    });
+
+    // Wait for all sounds to load
+    const loadedSounds = await Promise.all(loadPromises);
+    catSounds = loadedSounds.filter((sound): sound is AudioBuffer => sound !== null);
 
     if (catSounds.length === 0) {
-      console.error('No cat sounds loaded successfully');
-    } else {
-      console.log(`Successfully loaded ${catSounds.length} cat sounds`);
+      throw new Error('No sounds loaded successfully');
     }
+
+    console.log(`Successfully loaded ${catSounds.length} cat sounds`);
   } catch (error) {
     console.error('Audio initialization failed:', error);
+    throw error;
   }
 }
 
@@ -70,6 +89,10 @@ export function playPopSound() {
   }
 
   try {
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
     const source = audioContext.createBufferSource();
     const soundIndex = Math.floor(Math.random() * catSounds.length);
     const randomSound = catSounds[soundIndex];
@@ -79,17 +102,20 @@ export function playPopSound() {
       return;
     }
 
-    source.buffer = randomSound;
-    console.log(`Playing sound ${soundIndex + 1} of ${catSounds.length}`);
-
-    source.playbackRate.value = 1.25;
-
+    // Create and configure gain node for volume control
     const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0.35;
+    gainNode.gain.value = 0.35; // Set volume to 35%
 
+    // Connect nodes
+    source.buffer = randomSound;
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
+
+    // Start playback with a slightly higher pitch
+    source.playbackRate.value = 1.25;
     source.start(0);
+
+    console.log(`Playing sound ${soundIndex + 1} of ${catSounds.length}`);
   } catch (error) {
     console.error('Sound playback failed:', error);
   }
