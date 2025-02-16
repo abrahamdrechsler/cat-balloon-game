@@ -10,31 +10,32 @@ interface BalloonProps {
   isDog?: boolean;
 }
 
-// Simple cat face design based on reference image
+// Updated cat face design with better symmetry and more cat-like features
 const catPath = `
-  M 50 70 
-  A 25 25 0 0 1 25 45 
-  A 25 25 0 0 1 50 20
-  A 25 25 0 0 1 75 45
-  A 25 25 0 0 1 50 70
-  L 40 45 L 35 50 L 40 55
-  M 60 45 L 65 50 L 60 55
-  M 35 35 L 25 30
-  M 65 35 L 75 30
-  M 48 50 L 52 50
-`;
-
-// Simple dog face design based on reference image
-const dogPath = `
   M 50 70
-  C 30 70 20 60 20 45
+  C 35 70 20 60 20 45
   C 20 30 35 20 50 20
   C 65 20 80 30 80 45
-  C 80 60 70 70 50 70
-  M 30 35 C 25 35 20 40 25 45
-  M 70 35 C 75 35 80 40 75 45
-  M 45 50 L 55 50
-  M 48 45 L 52 45
+  C 80 60 65 70 50 70
+  M 35 30 L 25 20
+  M 65 30 L 75 20
+  M 35 45 C 30 45 30 50 35 50
+  M 65 45 C 70 45 70 50 65 50
+  M 47 55 L 53 55
+`;
+
+// Updated dog face design with more distinct features
+const dogPath = `
+  M 50 70
+  C 35 70 20 55 20 45
+  C 20 30 35 20 50 20
+  C 65 20 80 30 80 45
+  C 80 55 65 70 50 70
+  M 30 40 C 25 40 25 45 30 50
+  M 70 40 C 75 40 75 45 70 50
+  M 45 55 C 47 58 53 58 55 55
+  M 45 40 L 35 35
+  M 55 40 L 65 35
 `;
 
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
@@ -118,7 +119,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
           {/* Animal face */}
           <path
             d={isDog ? dogPath : catPath}
-            fill={isDog ? "#ff6b6b" : color}
+            fill={color}
             stroke="#333"
             strokeWidth="1.5"
           />
