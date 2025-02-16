@@ -8,6 +8,9 @@ const MEOW_FILES = [
   'Recording (3).mp3'
 ];
 
+// Track currently playing sounds to prevent overlap
+let isPlayingSound = false;
+
 async function loadSounds() {
   if (!audioContext) return;
 
@@ -28,6 +31,9 @@ async function loadSounds() {
 }
 
 export function playPopSound() {
+  // If a sound is currently playing, don't play another one
+  if (isPlayingSound) return;
+
   try {
     // Only create AudioContext on first user interaction
     if (!audioContext) {
@@ -40,6 +46,7 @@ export function playPopSound() {
       return;
     }
 
+    isPlayingSound = true;
     const source = audioContext.createBufferSource();
     const soundIndex = Math.floor(Math.random() * catSounds.length);
     const randomSound = catSounds[soundIndex];
@@ -53,8 +60,20 @@ export function playPopSound() {
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
     source.playbackRate.value = 1.25;
+
+    // Reset the playing flag when the sound ends
+    source.onended = () => {
+      isPlayingSound = false;
+    };
+
     source.start(0);
+
+    // Failsafe: reset the playing flag after 1 second in case onended doesn't fire
+    setTimeout(() => {
+      isPlayingSound = false;
+    }, 1000);
   } catch (error) {
     console.error('Sound playback failed:', error);
+    isPlayingSound = false; // Reset the flag in case of error
   }
 }
