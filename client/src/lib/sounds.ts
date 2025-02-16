@@ -7,36 +7,41 @@ const AUDIO_FILES = [
   'Recording (3).mp3'
 ];
 
-let lastPlayTime = 0;
-const DEBOUNCE_TIME = 100; // Prevent multiple sounds within 100ms
+// Simple sound manager with a single instance
+const POP_SOUND = new Audio('/assets/meow2.mp3');
+POP_SOUND.volume = 0.35;
 
-const sounds = AUDIO_FILES.map(file => {
-  const audio = new Audio(`${BASE_PATH}/assets/${file}`);
-  audio.volume = 0.35; // Set volume to 35%
-  return audio;
-});
+let isPlaying = false;
+let lastPlayTime = 0;
+const DEBOUNCE_TIME = 150; // Increased debounce time to prevent overlaps
 
 export function playPopSound() {
-  // Debounce to prevent multiple sounds
   const now = Date.now();
-  if (now - lastPlayTime < DEBOUNCE_TIME) {
+
+  // Don't play if already playing or too soon after last play
+  if (isPlaying || now - lastPlayTime < DEBOUNCE_TIME) {
     return;
   }
-  lastPlayTime = now;
 
   try {
-    // Get a random sound that's not currently playing
-    const availableSounds = sounds.filter(sound => sound.paused);
-    if (availableSounds.length === 0) return;
+    // Reset and play
+    POP_SOUND.currentTime = 0;
 
-    const sound = availableSounds[Math.floor(Math.random() * availableSounds.length)];
-    sound.currentTime = 0;
-    sound.play().catch(error => {
-      // Ignore errors - audio will play when possible
-      console.warn('Audio playback failed:', error);
-    });
+    const playPromise = POP_SOUND.play();
+    if (playPromise) {
+      isPlaying = true;
+      lastPlayTime = now;
+
+      playPromise
+        .then(() => {
+          isPlaying = false;
+        })
+        .catch(() => {
+          isPlaying = false;
+        });
+    }
   } catch (error) {
-    // Ignore errors - audio will play when possible
-    console.warn('Audio system error:', error);
+    isPlaying = false;
+    console.warn('Sound playback failed:', error);
   }
 }
