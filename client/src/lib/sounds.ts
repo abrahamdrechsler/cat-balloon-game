@@ -2,10 +2,10 @@ let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
 const MEOW_FILES = [
-  'meow2.m4a',
-  'meow3.m4a',
-  'Recording.m4a',
-  'Recording (3).m4a'
+  'meow2.mp3',
+  'meow3.mp3',
+  'Recording.mp3',
+  'Recording (3).mp3'
 ];
 
 export async function initializeAudio() {
@@ -80,16 +80,3 @@ export function playPopSound() {
     console.error('Sound playback failed:', error);
   }
 }
-
-// Simple beep as fallback sound if cat sounds fail to load
-const createFallbackSound = (context: AudioContext) => {
-  const oscillator = context.createOscillator();
-  const gainNode = context.createGain();
-
-  oscillator.connect(gainNode);
-  oscillator.frequency.setValueAtTime(440, context.currentTime);
-  gainNode.gain.setValueAtTime(0.1, context.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
-
-  return { oscillator, gainNode };
-};
