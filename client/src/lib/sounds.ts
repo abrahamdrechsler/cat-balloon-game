@@ -70,8 +70,12 @@ export function playPopSound() {
     const randomSound = catSounds[Math.floor(Math.random() * catSounds.length)];
     source.buffer = randomSound;
 
+    // Set playback rate to 2.0 for double speed (higher pitch)
+    source.playbackRate.value = 2.0;
+
     const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0.4;
+    // Reduce volume slightly as higher pitches can sound louder
+    gainNode.gain.value = 0.3;
 
     source.connect(gainNode);
     gainNode.connect(audioContext.destination);
