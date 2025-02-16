@@ -55,30 +55,25 @@ export default function Game() {
     return () => clearInterval(spawnTimer);
   }, [isPlaying, nextBalloonId, settings.spawnInterval, windowWidth]);
 
-  const handleDifficultySelect = async (selectedDifficulty: string) => {
+  const handleDifficultySelect = (selectedDifficulty: string) => {
     setDifficulty(selectedDifficulty);
 
-    try {
-      // Initialize audio first (after user interaction)
-      await initializeAudio();
+    // Start the game first
+    setScore(0);
+    setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
+    setBalloons([]);
+    setNextBalloonId(1);
+    setShowDifficulty(false);
+    setIsPlaying(true);
 
-      // Then start the game
-      setScore(0);
-      setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
-      setBalloons([]);
-      setNextBalloonId(1);
-      setShowDifficulty(false);
-      setIsPlaying(true);
-    } catch (error) {
-      console.warn("Starting game without audio:", error);
-      // Continue the game even if audio fails
-      setScore(0);
-      setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
-      setBalloons([]);
-      setNextBalloonId(1);
-      setShowDifficulty(false);
-      setIsPlaying(true);
-    }
+    // Initialize audio after game starts, wrapped in a try-catch
+    // We don't await this since we want the game to start immediately
+    initializeAudio().catch(error => {
+      // Only log unexpected errors
+      if (!(error instanceof DOMException) || error.name !== 'NotAllowedError') {
+        console.warn("Audio initialization error:", error);
+      }
+    });
   };
 
   const handlePop = (id: number) => {

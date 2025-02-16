@@ -48,7 +48,7 @@ export async function initializeAudio() {
         catSounds.push(audioBuffer);
         loadedAnySound = true;
       } catch (error) {
-        // Ignore specific storage access errors since they don't affect functionality
+        // Specifically ignore storage access errors
         if (error instanceof DOMException && error.name === 'NotAllowedError') {
           console.debug('Storage access not yet allowed - this is expected before user interaction');
           continue;
