@@ -67,8 +67,17 @@ export function playPopSound() {
 
   try {
     const source = audioContext.createBufferSource();
-    const randomSound = catSounds[Math.floor(Math.random() * catSounds.length)];
+    const soundIndex = Math.floor(Math.random() * catSounds.length);
+    const randomSound = catSounds[soundIndex];
+
+    // Verify the sound buffer is valid
+    if (!randomSound || !randomSound.duration) {
+      console.error(`Invalid sound buffer at index ${soundIndex}`);
+      return;
+    }
+
     source.buffer = randomSound;
+    console.log(`Playing sound ${soundIndex + 1} of ${catSounds.length}`);
 
     // Set playback rate to 1.5 for moderately higher pitch (halfway between normal and double speed)
     source.playbackRate.value = 1.5;
