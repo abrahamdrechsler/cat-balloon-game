@@ -23,11 +23,14 @@ export async function initializeAudio() {
       await audioContext.resume();
     }
 
-    // Load each sound file with path adjustment for production vs development
+    // Get the base URL from the current script's source
+    const currentScript = document.currentScript as HTMLScriptElement;
+    const basePath = currentScript?.src.includes('/assets/') ? './assets/' : '/assets/';
+    console.log('Loading sounds from:', basePath);
+
+    // Load each sound file
     for (const soundFile of MEOW_FILES) {
       try {
-        // Use relative path for production, absolute for development
-        const basePath = import.meta.env.PROD ? './assets/' : '/assets/';
         const response = await fetch(`${basePath}${soundFile}`);
 
         if (!response.ok) {
@@ -71,7 +74,6 @@ export function playPopSound() {
     const soundIndex = Math.floor(Math.random() * catSounds.length);
     const randomSound = catSounds[soundIndex];
 
-    // Verify the sound buffer is valid
     if (!randomSound || !randomSound.duration) {
       console.error(`Invalid sound buffer at index ${soundIndex}`);
       return;
@@ -80,7 +82,6 @@ export function playPopSound() {
     source.buffer = randomSound;
     console.log(`Playing sound ${soundIndex + 1} of ${catSounds.length}`);
 
-    // Set playback rate to 1.25 for slightly higher pitch
     source.playbackRate.value = 1.25;
 
     const gainNode = audioContext.createGain();
