@@ -37,50 +37,49 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Use the balloon's id to select a consistent pose
   const poseIndex = id % catPoses.length;
   const pose = catPoses[poseIndex];
 
-  // Every 4th balloon moves 35% faster
   const isFaster = id % 4 === 0;
   const baseDuration = 8;
   const duration = (isFaster ? baseDuration * 0.65 : baseDuration) / speedMultiplier;
 
   const handleClick = () => {
-    if (isPopping) return; // Prevent double-clicks during pop animation
+    if (isPopping) return;
     setIsPopping(true);
     playPopSound();
-    // Delay the actual removal slightly to allow for pop animation
     setTimeout(() => onPop(id), 150);
   };
 
   if (!windowHeight) {
-    return null; // Wait for window height to be available
+    return null;
   }
+
+  const verticalDistance = windowHeight + 300; // Add extra distance to ensure cats float completely off screen
 
   return (
     <AnimatePresence>
       <motion.div
         initial={{ y: windowHeight, x }}
         animate={{
-          y: -150,
+          y: -verticalDistance,
           x: [
-            x - 20,
-            x + 20,
-            x - 20,
-            x + 20,
-            x - 20
+            x - 30,
+            x + 30,
+            x - 30,
+            x + 30,
+            x - 30
           ],
           scale: isPopping ? [1, 1.2, 0] : 1,
           opacity: isPopping ? [1, 1, 0] : 1
         }}
         transition={{
           y: {
-            duration,
+            duration: duration,
             ease: "linear"
           },
           x: {
-            duration: 2,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut"
           },
