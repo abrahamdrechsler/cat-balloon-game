@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Balloon Shape Preview</title>
+    <style>
+        .preview-container {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+        }
+        .shape-preview {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        textarea {
+            width: 300px;
+            height: 150px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="shape-preview">
+            <h3>Cat Balloon</h3>
+            <svg width="120" height="160" viewBox="0 0 100 100" style="background: #f0f0f0;">
+                <path 
+                    id="catShape"
+                    d="M 50 70 C 35 70 20 60 20 45 C 20 30 35 20 50 20 C 65 20 80 30 80 45 C 80 60 65 70 50 70 M 35 30 L 25 20 M 65 30 L 75 20 M 35 45 C 30 45 30 50 35 50 M 65 45 C 70 45 70 50 65 50 M 47 55 L 53 55"
+                    fill="#FFB6C1"
+                    stroke="#333"
+                    stroke-width="1.5"
+                />
+                <circle cx="35" cy="45" r="2" fill="#333" />
+                <circle cx="65" cy="45" r="2" fill="#333" />
+            </svg>
+            <textarea id="catPath" oninput="updateShape('cat')">M 50 70 C 35 70 20 60 20 45 C 20 30 35 20 50 20 C 65 20 80 30 80 45 C 80 60 65 70 50 70 M 35 30 L 25 20 M 65 30 L 75 20 M 35 45 C 30 45 30 50 35 50 M 65 45 C 70 45 70 50 65 50 M 47 55 L 53 55</textarea>
+        </div>
+        
+        <div class="shape-preview">
+            <h3>Dog Balloon</h3>
+            <svg width="120" height="160" viewBox="0 0 100 100" style="background: #f0f0f0;">
+                <path 
+                    id="dogShape"
+                    d="M 50 70 C 35 70 20 55 20 45 C 20 30 35 20 50 20 C 65 20 80 30 80 45 C 80 55 65 70 50 70 M 30 40 C 25 40 25 45 30 50 M 70 40 C 75 40 75 45 70 50 M 45 55 C 47 58 53 58 55 55 M 45 40 L 35 35 M 55 40 L 65 35"
+                    fill="#FFB6C1"
+                    stroke="#333"
+                    stroke-width="1.5"
+                />
+                <circle cx="35" cy="45" r="2" fill="#333" />
+                <circle cx="65" cy="45" r="2" fill="#333" />
+            </svg>
+            <textarea id="dogPath" oninput="updateShape('dog')">M 50 70 C 35 70 20 55 20 45 C 20 30 35 20 50 20 C 65 20 80 30 80 45 C 80 55 65 70 50 70 M 30 40 C 25 40 25 45 30 50 M 70 40 C 75 40 75 45 70 50 M 45 55 C 47 58 53 58 55 55 M 45 40 L 35 35 M 55 40 L 65 35</textarea>
+        </div>
+    </div>
+
+    <script>
+        function updateShape(type) {
+            const path = document.getElementById(type === 'cat' ? 'catPath' : 'dogPath').value;
+            const shape = document.getElementById(type === 'cat' ? 'catShape' : 'dogShape');
+            try {
+                shape.setAttribute('d', path);
+            } catch (e) {
+                console.error('Invalid path:', e);
+            }
+        }
+    </script>
+</body>
+</html>
