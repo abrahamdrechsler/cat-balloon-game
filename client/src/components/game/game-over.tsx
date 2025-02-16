@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import HighScores, { saveHighScore } from "./high-scores";
-import { useEffect, useState } from "react";
 import { DIFFICULTY_LEVELS } from "@/lib/constants";
 
 type DifficultyLevel = keyof typeof DIFFICULTY_LEVELS;
@@ -13,13 +11,6 @@ interface GameOverProps {
 }
 
 export default function GameOver({ score, onRestart, difficulty }: GameOverProps) {
-  const [isHighScore, setIsHighScore] = useState(false);
-
-  useEffect(() => {
-    const newHighScore = saveHighScore(score, difficulty);
-    setIsHighScore(newHighScore);
-  }, [score, difficulty]);
-
   return (
     <div className="flex flex-col items-center gap-4 w-[90%] max-w-md">
       <Card className="w-full">
@@ -34,11 +25,6 @@ export default function GameOver({ score, onRestart, difficulty }: GameOverProps
             <div className="text-sm text-muted-foreground mt-1">
               Difficulty: {DIFFICULTY_LEVELS[difficulty].name}
             </div>
-            {isHighScore && (
-              <div className="text-lg mt-2 text-primary animate-bounce">
-                🎉 New High Score! 🎉
-              </div>
-            )}
           </div>
           <Button
             size="lg"
@@ -49,8 +35,6 @@ export default function GameOver({ score, onRestart, difficulty }: GameOverProps
           </Button>
         </CardContent>
       </Card>
-
-      <HighScores currentScore={score} difficulty={difficulty} />
     </div>
   );
 }
