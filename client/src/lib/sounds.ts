@@ -1,12 +1,12 @@
 let audioContext: AudioContext | null = null;
 let catSounds: AudioBuffer[] = [];
 
-// List of meow sound files to load
+// List of meow sound files to load with correct extensions
 const MEOW_FILES = [
-  'meow2.mp3',  
-  'meow3.mp3',
-  'Recording.mp3',
-  'Recording (3).mp3'
+  'meow2.m4a',  
+  'meow3.m4a',
+  'Recording.m4a',
+  'Recording (3).m4a'
 ].map(file => {
   // In development, use absolute path; in production, use relative path
   const isDev = import.meta.env.DEV;

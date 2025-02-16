@@ -10,7 +10,7 @@ interface BalloonProps {
   speedMultiplier?: number;
 }
 
-// Array of SVG paths for different cat poses inspired by the reference image
+// Array of SVG paths for different cat poses
 const catPoses = [
   {
     // Sitting cat looking up
@@ -63,8 +63,8 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
       <motion.div
         initial={{ y: windowHeight + 100, x, scale: 1, opacity: 1 }}
         animate={{
-          y: -100, // Move just beyond the top of the screen
-          x: [x - 20, x + 20, x - 20, x + 20, x - 20], // Gentle swaying motion
+          y: -200, // Move further beyond the top of the screen
+          x: [x - 40, x + 40, x - 40, x + 40, x - 40], // Wider swaying motion
           scale: isPopping ? [1, 1.2, 0] : 1,
           opacity: isPopping ? [1, 1, 0] : 1,
           transition: {
