@@ -4,6 +4,7 @@ import Balloon from "@/components/game/balloon";
 import GameOver from "@/components/game/game-over";
 import DifficultySelect from "@/components/game/difficulty-select";
 import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY } from "@/lib/constants";
+import { initAudio, playRandomMeow } from "@/lib/audio";
 
 export default function Game() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -16,6 +17,11 @@ export default function Game() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const settings = DIFFICULTY_LEVELS[difficulty];
+
+  // Initialize audio when the game starts
+  useEffect(() => {
+    initAudio();
+  }, []);
 
   useEffect(() => {
     function handleResize() {
@@ -68,6 +74,7 @@ export default function Game() {
   const handlePop = (id: number) => {
     setBalloons((prev) => prev.filter((balloon) => balloon.id !== id));
     setScore((prev) => prev + settings.scoreMultiplier);
+    playRandomMeow(); // Play a random meow sound when a balloon is popped
   };
 
   const handleRestart = () => {
