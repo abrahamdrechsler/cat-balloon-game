@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { playPopSound } from "@/lib/sounds";
 import { useState, useEffect } from "react";
 
 interface BalloonProps {
@@ -47,7 +46,6 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
   const handleClick = () => {
     if (isPopping) return;
     setIsPopping(true);
-    playPopSound();
     setTimeout(() => onPop(id), 150);
   };
 

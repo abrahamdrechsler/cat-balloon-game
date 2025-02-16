@@ -4,7 +4,6 @@ import Balloon from "@/components/game/balloon";
 import GameOver from "@/components/game/game-over";
 import DifficultySelect from "@/components/game/difficulty-select";
 import { DIFFICULTY_LEVELS, DEFAULT_DIFFICULTY } from "@/lib/constants";
-import { playPopSound } from "@/lib/sounds";
 
 export default function Game() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -57,7 +56,6 @@ export default function Game() {
 
   const handleDifficultySelect = (selectedDifficulty: string) => {
     setDifficulty(selectedDifficulty);
-    // Start the game immediately
     setScore(0);
     setTimeLeft(DIFFICULTY_LEVELS[selectedDifficulty].duration);
     setBalloons([]);
@@ -69,8 +67,6 @@ export default function Game() {
   const handlePop = (id: number) => {
     setBalloons((prev) => prev.filter((balloon) => balloon.id !== id));
     setScore((prev) => prev + settings.scoreMultiplier);
-    // Sound will be initialized on first pop attempt
-    playPopSound();
   };
 
   const handleRestart = () => {
