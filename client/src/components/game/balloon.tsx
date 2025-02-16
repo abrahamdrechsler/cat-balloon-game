@@ -61,24 +61,37 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1 }: Ba
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: windowHeight + 100, x, scale: 1, opacity: 1 }}
+        initial={{ y: windowHeight, x }}
         animate={{
-          y: -200, // Move further beyond the top of the screen
-          x: [x - 40, x + 40, x - 40, x + 40, x - 40], // Wider swaying motion
+          y: -150,
+          x: [
+            x - 20,
+            x + 20,
+            x - 20,
+            x + 20,
+            x - 20
+          ],
           scale: isPopping ? [1, 1.2, 0] : 1,
-          opacity: isPopping ? [1, 1, 0] : 1,
-          transition: {
-            y: { duration, ease: "linear" },
-            x: {
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            },
-            scale: isPopping ? { duration: 0.15, times: [0, 0.5, 1] } : undefined,
-            opacity: isPopping ? { duration: 0.15, times: [0, 0.5, 1] } : undefined
-          }
+          opacity: isPopping ? [1, 1, 0] : 1
         }}
-        className="absolute cursor-pointer"
+        transition={{
+          y: {
+            duration,
+            ease: "linear"
+          },
+          x: {
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          },
+          scale: isPopping ? { duration: 0.15, times: [0, 0.5, 1] } : undefined,
+          opacity: isPopping ? { duration: 0.15, times: [0, 0.5, 1] } : undefined
+        }}
+        style={{
+          position: "absolute",
+          willChange: "transform"
+        }}
+        className="cursor-pointer"
         onClick={handleClick}
       >
         <svg
