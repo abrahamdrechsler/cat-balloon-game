@@ -7,9 +7,12 @@ const AUDIO_FILES = [
   'Recording (3).mp3'
 ];
 
-// Simple sound manager with a single instance
-const POP_SOUND = new Audio('/assets/meow2.mp3');
-POP_SOUND.volume = 0.35;
+// Pre-load all sounds
+const SOUNDS = AUDIO_FILES.map(file => {
+  const audio = new Audio(`${BASE_PATH}/assets/${file}`);
+  audio.volume = 0.35;
+  return audio;
+});
 
 let isPlaying = false;
 let lastPlayTime = 0;
@@ -24,10 +27,13 @@ export function playPopSound() {
   }
 
   try {
-    // Reset and play
-    POP_SOUND.currentTime = 0;
+    // Pick a random sound
+    const sound = SOUNDS[Math.floor(Math.random() * SOUNDS.length)];
 
-    const playPromise = POP_SOUND.play();
+    // Reset and play
+    sound.currentTime = 0;
+    const playPromise = sound.play();
+
     if (playPromise) {
       isPlaying = true;
       lastPlayTime = now;
