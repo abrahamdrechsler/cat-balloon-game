@@ -48,6 +48,11 @@ export async function initializeAudio() {
         catSounds.push(audioBuffer);
         loadedAnySound = true;
       } catch (error) {
+        // Ignore specific storage access errors since they don't affect functionality
+        if (error instanceof DOMException && error.name === 'NotAllowedError') {
+          console.debug('Storage access not yet allowed - this is expected before user interaction');
+          continue;
+        }
         console.warn(`Error loading ${soundFile}:`, error);
         continue;
       }
@@ -61,6 +66,10 @@ export async function initializeAudio() {
     isAudioInitialized = true;
     console.log(`Successfully loaded ${catSounds.length} cat sounds`);
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'NotAllowedError') {
+      console.debug('Storage access not yet allowed - this is expected before user interaction');
+      return;
+    }
     console.error('Audio initialization failed:', error);
     // Allow the game to continue without sound
   }
