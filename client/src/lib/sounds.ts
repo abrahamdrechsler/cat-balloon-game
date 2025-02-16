@@ -27,7 +27,9 @@ export async function initializeAudio() {
     }
 
     // Get the base URL based on environment
-    const basePath = window.location.origin.includes('github.io') ? '.' : '';
+    const basePath = window.location.pathname.includes('cat-balloon-pop') 
+      ? '/cat-balloon-pop'  // GitHub Pages path
+      : '';
     const soundPath = `${basePath}/assets/`;
     console.log('Loading sounds from:', soundPath);
 
