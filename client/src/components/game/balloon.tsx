@@ -226,7 +226,6 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
           position: "absolute",
           willChange: "transform"
         }}
-        className="cursor-knife"
         onMouseOver={handleMouseOver}
       >
         {isDog ? <DogBalloon /> : <CatBalloon />}

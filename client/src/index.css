@@ -14,7 +14,7 @@
 
 @layer components {
   .game-container {
-    @apply fixed inset-0 w-full h-full flex items-center justify-center overflow-hidden;
+    @apply fixed inset-0 w-full h-full flex items-center justify-center overflow-hidden cursor-knife;
   }
 
   .game-content {
