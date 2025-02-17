@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import confetti from 'canvas-confetti';
 
 interface BalloonProps {
   id: number;
@@ -13,12 +14,13 @@ interface BalloonProps {
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
+  const [isGiant] = useState(() => !isDog && Math.random() < 0.04); // 1/25 chance for giant cats
   const [randomSize] = useState(() => {
     if (isDog) {
       return 1.25; // Dogs are always 25% larger
     }
-    // 1 in 50 chance for a giant cat (700% larger)
-    if (Math.random() < 0.02) {
+    // Check if this is a giant cat (700% larger)
+    if (isGiant) {
       return 7.0;
     }
     // Otherwise, cats vary by ±20%
@@ -39,6 +41,17 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
   const handleMouseOver = () => {
     if (isPopping) return;
     setIsPopping(true);
+
+    // Trigger confetti for giant cat balloons
+    if (isGiant) {
+      const options = {
+        particleCount: 150,
+        spread: 70,
+        origin: { x: x / window.innerWidth, y: 0.6 }
+      };
+      confetti(options);
+    }
+
     setTimeout(() => onPop(id), 150);
   };
 
