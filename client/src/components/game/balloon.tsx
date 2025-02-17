@@ -14,7 +14,7 @@ interface BalloonProps {
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
-  const [isGiant] = useState(() => !isDog && Math.random() < 0.04); // 1/25 chance for giant cats
+  const [isGiant] = useState(() => !isDog && Math.random() < 0.05); // 1/20 chance for giant cats
   const [randomSize] = useState(() => {
     if (isDog) {
       return 1.25; // Dogs are always 25% larger
@@ -34,6 +34,13 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Create audio elements
+  const [celebrationSound] = useState(() => {
+    const audio = new Audio('/sounds/celebration.mp3');
+    audio.volume = 0.4;
+    return audio;
+  });
+
   const isFaster = id % 4 === 0;
   const baseDuration = 8;
   const duration = (isFaster ? baseDuration * 0.65 : baseDuration) / speedMultiplier;
@@ -42,7 +49,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
     if (isPopping) return;
     setIsPopping(true);
 
-    // Trigger confetti for giant cat balloons
+    // Trigger confetti and celebration sound for giant cat balloons
     if (isGiant) {
       const options = {
         particleCount: 150,
@@ -50,6 +57,8 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         origin: { x: x / window.innerWidth, y: 0.6 }
       };
       confetti(options);
+      celebrationSound.currentTime = 0;
+      celebrationSound.play().catch(console.error); // Catch and log any autoplay issues
     }
 
     setTimeout(() => onPop(id), 150);
