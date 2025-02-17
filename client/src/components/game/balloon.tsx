@@ -14,8 +14,15 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
   const [isPopping, setIsPopping] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
   const [randomSize] = useState(() => {
-    // For cats: random size between 0.8 and 1.2 (±20%)
-    return isDog ? 1.25 : 0.8 + Math.random() * 0.4;
+    if (isDog) {
+      return 1.25; // Dogs are always 25% larger
+    }
+    // 1 in 50 chance for a giant cat (700% larger)
+    if (Math.random() < 0.02) {
+      return 7.0;
+    }
+    // Otherwise, cats vary by ±20%
+    return 0.8 + Math.random() * 0.4;
   });
 
   useEffect(() => {
