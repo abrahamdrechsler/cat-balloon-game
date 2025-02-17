@@ -25,7 +25,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
   const baseDuration = 8;
   const duration = (isFaster ? baseDuration * 0.65 : baseDuration) / speedMultiplier;
 
-  const handleClick = () => {
+  const handleMouseOver = () => {
     if (isPopping) return;
     setIsPopping(true);
     setTimeout(() => onPop(id), 150);
@@ -226,8 +226,8 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
           position: "absolute",
           willChange: "transform"
         }}
-        className="cursor-pointer"
-        onClick={handleClick}
+        className="cursor-knife"
+        onMouseOver={handleMouseOver}
       >
         {isDog ? <DogBalloon /> : <CatBalloon />}
       </motion.div>
