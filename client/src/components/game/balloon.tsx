@@ -13,6 +13,10 @@ interface BalloonProps {
 export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDog = false }: BalloonProps) {
   const [isPopping, setIsPopping] = useState(false);
   const [windowHeight, setWindowHeight] = useState(0);
+  const [randomSize] = useState(() => {
+    // For cats: random size between 0.8 and 1.2 (±20%)
+    return isDog ? 1.25 : 0.8 + Math.random() * 0.4;
+  });
 
   useEffect(() => {
     setWindowHeight(window.innerHeight);
@@ -39,8 +43,8 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
   const CatBalloon = () => (
     <svg
-      width="120"
-      height="160"
+      width={120 * randomSize}
+      height={160 * randomSize}
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -109,8 +113,8 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
   const DogBalloon = () => (
     <svg
-      width="120"
-      height="160"
+      width={120 * randomSize}
+      height={160 * randomSize}
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +127,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         strokeDasharray="4 4"
       />
 
-      {/* Head - Always red for dogs */}
+      {/* Head */}
       <circle 
         cx="50" 
         cy="50" 
@@ -133,7 +137,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         strokeWidth="1.5"
       />
 
-      {/* Left Ear - Floppy triangle */}
+      {/* Left Ear */}
       <path
         d="M 25 35 L 35 30 L 35 25 L 28 22 Z"
         fill="#FF0000"
@@ -141,7 +145,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         strokeWidth="1.5"
       />
 
-      {/* Right Ear - Floppy triangle */}
+      {/* Right Ear */}
       <path
         d="M 75 35 L 65 30 L 65 25 L 72 22 Z"
         fill="#FF0000"
@@ -173,18 +177,18 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         strokeWidth="1.5"
       />
 
-      {/* Eyes - Angled lines */}
+      {/* Eyes */}
       <line x1="40" y1="45" x2="35" y2="42" stroke="#333" strokeWidth="1.5" />
       <line x1="60" y1="45" x2="65" y2="42" stroke="#333" strokeWidth="1.5" />
 
-      {/* Left Whiskers - Shorter */}
+      {/* Left Whiskers */}
       <g stroke="#333" strokeWidth="1">
         <line x1="35" y1="55" x2="30" y2="55" />
         <line x1="35" y1="53" x2="30" y2="52" />
         <line x1="35" y1="57" x2="30" y2="58" />
       </g>
 
-      {/* Right Whiskers - Shorter */}
+      {/* Right Whiskers */}
       <g stroke="#333" strokeWidth="1">
         <line x1="65" y1="55" x2="70" y2="55" />
         <line x1="65" y1="53" x2="70" y2="52" />
