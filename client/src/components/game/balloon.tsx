@@ -123,38 +123,46 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         strokeDasharray="4 4"
       />
 
-      {/* Head */}
+      {/* Head - Always red for dogs */}
       <circle 
         cx="50" 
         cy="50" 
         r="30" 
-        fill={color}
+        fill="#FF0000"
         stroke="#333"
         strokeWidth="1.5"
       />
 
-      {/* Left Ear */}
+      {/* Left Ear - Floppy triangle */}
       <path
-        d="M 30 30 C 20 25 15 35 25 40"
-        fill={color}
+        d="M 25 35 L 35 30 L 30 45 Z"
+        fill="#FF0000"
         stroke="#333"
         strokeWidth="1.5"
       />
 
-      {/* Right Ear */}
+      {/* Right Ear - Floppy triangle */}
       <path
-        d="M 70 30 C 80 25 85 35 75 40"
-        fill={color}
+        d="M 75 35 L 65 30 L 70 45 Z"
+        fill="#FF0000"
         stroke="#333"
         strokeWidth="1.5"
       />
 
       {/* Snout */}
       <path
-        d="M 45 55 C 47 62 53 62 55 55"
+        d="M 40 55 L 50 65 L 60 55"
         fill="none"
         stroke="#333"
         strokeWidth="1.5"
+      />
+
+      {/* Tongue */}
+      <path
+        d="M 48 65 Q 50 70 52 65"
+        fill="#FFA0A0"
+        stroke="#FF6B6B"
+        strokeWidth="1"
       />
 
       {/* Eyes */}
