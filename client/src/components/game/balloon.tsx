@@ -149,17 +149,17 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         strokeWidth="1.5"
       />
 
-      {/* Muzzle - White rectangle */}
+      {/* Muzzle - Outline only */}
       <path
-        d="M 40 55 L 40 65 L 60 65 L 60 55 Z"
-        fill="white"
+        d="M 40 45 L 40 68 L 60 68 L 60 45"
+        fill="none"
         stroke="#333"
         strokeWidth="1.5"
       />
 
       {/* Mouth lines */}
       <path
-        d="M 50 60 L 50 65 M 50 65 L 45 68 M 50 65 L 55 68"
+        d="M 50 55 L 50 65 M 50 65 L 45 68 M 50 65 L 55 68"
         fill="none"
         stroke="#333"
         strokeWidth="1.5"
