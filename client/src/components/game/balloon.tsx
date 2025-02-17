@@ -21,10 +21,6 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isFaster = id % 4 === 0;
-  const baseDuration = 8;
-  const duration = (isFaster ? baseDuration * 0.65 : baseDuration) / speedMultiplier;
-
   const handleClick = () => {
     if (isPopping) return;
     setIsPopping(true);
@@ -41,13 +37,13 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
     <svg
       width="120"
       height="160"
-      viewBox="0 0 100 100"
+      viewBox="0 0 400 400"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* String */}
       <path
-        d="M50 80 L50 160"
+        d="M200 300 L200 380"
         stroke="#666"
         strokeWidth="2"
         strokeDasharray="4 4"
@@ -55,55 +51,66 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
       {/* Head */}
       <circle 
-        cx="50" 
-        cy="50" 
-        r="30" 
-        fill={color}
+        cx="200" 
+        cy="200" 
+        r="100" 
+        fill="white"
         stroke="#333"
-        strokeWidth="1.5"
+        strokeWidth="4"
       />
+
+      {/* Left Whiskers */}
+      <g stroke="#333" strokeWidth="4">
+        <line x1="150" y1="200" x2="30" y2="200" />
+        <line x1="150" y1="195" x2="30" y2="177" />
+        <line x1="150" y1="205" x2="30" y2="223" />
+      </g>
+
+      {/* Right Whiskers */}
+      <g stroke="#333" strokeWidth="4">
+        <line x1="250" y1="200" x2="370" y2="200" />
+        <line x1="250" y1="195" x2="370" y2="177" />
+        <line x1="250" y1="205" x2="370" y2="223" />
+      </g>
 
       {/* Left Ear */}
       <path
-        d="M 30 35 L 42.5 26.25 L 27.5 20 Z"
-        fill={color}
+        d="M120 140 L170 105 L110 80 Z"
+        fill="white"
         stroke="#333"
-        strokeWidth="1.5"
+        strokeWidth="4"
       />
 
       {/* Right Ear */}
       <path
-        d="M 70 35 L 57.5 26.25 L 72.5 20 Z"
-        fill={color}
+        d="M280 140 L230 105 L290 80 Z"
+        fill="white"
         stroke="#333"
-        strokeWidth="1.5"
+        strokeWidth="4"
       />
 
-      {/* Left Whiskers */}
-      <g stroke="#333" strokeWidth="1">
-        <line x1="35" y1="50" x2="15" y2="50" />
-        <line x1="35" y1="45" x2="15" y2="42" />
-        <line x1="35" y1="55" x2="15" y2="58" />
-      </g>
-
-      {/* Right Whiskers */}
-      <g stroke="#333" strokeWidth="1">
-        <line x1="65" y1="50" x2="85" y2="50" />
-        <line x1="65" y1="45" x2="85" y2="42" />
-        <line x1="65" y1="55" x2="85" y2="58" />
-      </g>
-
-      {/* Nose */}
-      <path
-        d="M 45 55 L 50 60 L 55 55 Z"
-        fill="#FFB6C1"
+      {/* Muzzle Rectangle */}
+      <rect
+        x="160"
+        y="180"
+        width="80"
+        height="60"
+        fill="white"
         stroke="#333"
-        strokeWidth="1"
+        strokeWidth="4"
+      />
+
+      {/* Nose and Mouth */}
+      <path
+        d="M200 190 L200 220 M190 220 L200 220 L210 220"
+        fill="none"
+        stroke="#333"
+        strokeWidth="4"
       />
 
       {/* Eyes */}
-      <circle cx="40" cy="45" r="2" fill="#333" />
-      <circle cx="60" cy="45" r="2" fill="#333" />
+      <circle cx="160" cy="160" r="8" fill="#333" />
+      <circle cx="240" cy="160" r="8" fill="#333" />
     </svg>
   );
 
@@ -111,13 +118,13 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
     <svg
       width="120"
       height="160"
-      viewBox="0 0 100 100"
+      viewBox="0 0 400 400"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* String */}
       <path
-        d="M50 80 L50 160"
+        d="M200 300 L200 380"
         stroke="#666"
         strokeWidth="2"
         strokeDasharray="4 4"
@@ -125,49 +132,52 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
       {/* Head - Always red for dogs */}
       <circle 
-        cx="50" 
-        cy="50" 
-        r="30" 
+        cx="200" 
+        cy="200" 
+        r="100" 
         fill="#FF0000"
         stroke="#333"
-        strokeWidth="1.5"
+        strokeWidth="4"
       />
 
-      {/* Left Ear - Floppy triangle */}
+      {/* Left Ear */}
       <path
-        d="M 25 35 L 35 30 L 30 45 Z"
+        d="M120 140 L170 105 L110 80 Z"
         fill="#FF0000"
         stroke="#333"
-        strokeWidth="1.5"
+        strokeWidth="4"
       />
 
-      {/* Right Ear - Floppy triangle */}
+      {/* Right Ear */}
       <path
-        d="M 75 35 L 65 30 L 70 45 Z"
+        d="M280 140 L230 105 L290 80 Z"
         fill="#FF0000"
         stroke="#333"
-        strokeWidth="1.5"
+        strokeWidth="4"
       />
 
-      {/* Snout */}
+      {/* Muzzle Rectangle */}
+      <rect
+        x="160"
+        y="180"
+        width="80"
+        height="60"
+        fill="#FF0000"
+        stroke="#333"
+        strokeWidth="4"
+      />
+
+      {/* Nose and Mouth */}
       <path
-        d="M 40 55 L 50 65 L 60 55"
+        d="M200 190 L200 220 M190 220 L200 220 L210 220"
         fill="none"
         stroke="#333"
-        strokeWidth="1.5"
-      />
-
-      {/* Tongue */}
-      <path
-        d="M 48 65 Q 50 70 52 65"
-        fill="#FFA0A0"
-        stroke="#FF6B6B"
-        strokeWidth="1"
+        strokeWidth="4"
       />
 
       {/* Eyes */}
-      <circle cx="40" cy="45" r="2" fill="#333" />
-      <circle cx="60" cy="45" r="2" fill="#333" />
+      <circle cx="160" cy="160" r="8" fill="#333" />
+      <circle cx="240" cy="160" r="8" fill="#333" />
     </svg>
   );
 
@@ -189,7 +199,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
         }}
         transition={{
           y: {
-            duration: duration,
+            duration: 8 / speedMultiplier,
             ease: "linear"
           },
           x: {
