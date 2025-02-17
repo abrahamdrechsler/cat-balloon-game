@@ -135,7 +135,7 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
       {/* Left Ear - Floppy triangle */}
       <path
-        d="M 25 35 L 35 30 L 30 45 Z"
+        d="M 25 35 L 35 30 L 35 25 L 28 22 Z"
         fill="#FF0000"
         stroke="#333"
         strokeWidth="1.5"
@@ -143,31 +143,53 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
       {/* Right Ear - Floppy triangle */}
       <path
-        d="M 75 35 L 65 30 L 70 45 Z"
+        d="M 75 35 L 65 30 L 65 25 L 72 22 Z"
         fill="#FF0000"
         stroke="#333"
         strokeWidth="1.5"
       />
 
-      {/* Snout */}
+      {/* Muzzle - White rectangle */}
       <path
-        d="M 40 55 L 50 65 L 60 55"
+        d="M 40 55 L 40 65 L 60 65 L 60 55 Z"
+        fill="white"
+        stroke="#333"
+        strokeWidth="1.5"
+      />
+
+      {/* Mouth lines */}
+      <path
+        d="M 50 60 L 50 65 M 50 65 L 45 68 M 50 65 L 55 68"
         fill="none"
         stroke="#333"
         strokeWidth="1.5"
       />
 
-      {/* Tongue */}
+      {/* Nose */}
       <path
-        d="M 48 65 Q 50 70 52 65"
-        fill="#FFA0A0"
-        stroke="#FF6B6B"
-        strokeWidth="1"
+        d="M 45 55 L 55 55 L 57 50 L 43 50 Z"
+        fill="#FFB6C1"
+        stroke="#333"
+        strokeWidth="1.5"
       />
 
-      {/* Eyes */}
-      <circle cx="40" cy="45" r="2" fill="#333" />
-      <circle cx="60" cy="45" r="2" fill="#333" />
+      {/* Eyes - Angled lines */}
+      <line x1="40" y1="45" x2="35" y2="42" stroke="#333" strokeWidth="1.5" />
+      <line x1="60" y1="45" x2="65" y2="42" stroke="#333" strokeWidth="1.5" />
+
+      {/* Left Whiskers - Shorter */}
+      <g stroke="#333" strokeWidth="1">
+        <line x1="35" y1="55" x2="30" y2="55" />
+        <line x1="35" y1="53" x2="30" y2="52" />
+        <line x1="35" y1="57" x2="30" y2="58" />
+      </g>
+
+      {/* Right Whiskers - Shorter */}
+      <g stroke="#333" strokeWidth="1">
+        <line x1="65" y1="55" x2="70" y2="55" />
+        <line x1="65" y1="53" x2="70" y2="52" />
+        <line x1="65" y1="57" x2="70" y2="58" />
+      </g>
     </svg>
   );
 
