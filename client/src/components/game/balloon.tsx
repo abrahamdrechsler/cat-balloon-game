@@ -36,7 +36,8 @@ export default function Balloon({ id, x, color, onPop, speedMultiplier = 1, isDo
 
   // Create audio elements
   const [celebrationSound] = useState(() => {
-    const audio = new Audio('/sounds/celebration.mp3');
+    // Use relative path that works in both environments
+    const audio = new Audio('./sounds/celebration.mp3');
     audio.volume = 0.4;
     return audio;
   });
